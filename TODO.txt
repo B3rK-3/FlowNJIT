@@ -1,0 +1,6 @@
+- cleanup working directory
+- add restrictions to course sidebar
+    - add a information/warning icon on the graph node abt restrictions
+- find a way to display co-reqs
+
+- solidifiy plans on querying classes and prereqs
