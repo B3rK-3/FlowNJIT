@@ -11,6 +11,8 @@ import {
     Nodes,
 } from "../constants";
 import { Span } from "next/dist/trace";
+import MainSidebar from "./MainSidebar";
+import CourseSidebar from "./CourseSidebar";
 
 const MAX_GRAPH_COURSES = 100;
 const graphData = graphDataRaw as CourseStructure;
@@ -40,7 +42,7 @@ export default function HomeClient({
     const [selectedCourse, setSelectedCourse] = useState<string>(
         initialSelectedCourse ?? ""
     );
-    const [infoCourse, setInfoCourse] = useState<string>(
+    const [currentCourse, setCurrentCourse] = useState<string>(
         initialInfoCourse ?? initialSelectedCourse ?? ""
     );
     const [searchQuery, setSearchQuery] = useState(initialSearchQuery ?? "");
@@ -48,7 +50,7 @@ export default function HomeClient({
 
     useEffect(() => {
         setSelectedCourse(initialSelectedCourse ?? "");
-        setInfoCourse(initialInfoCourse ?? initialSelectedCourse ?? "");
+        setCurrentCourse(initialInfoCourse ?? initialSelectedCourse ?? "");
         setSearchQuery(initialSearchQuery ?? "");
     }, [initialInfoCourse, initialSearchQuery, initialSelectedCourse]);
 
@@ -95,10 +97,10 @@ export default function HomeClient({
     }, [displayedCourses, selectedCourse]);
 
     const infoData = useMemo(() => {
-        console.log(infoCourse);
-        if (!infoCourse) return undefined;
-        return graphData[infoCourse];
-    }, [infoCourse]);
+        console.log(currentCourse);
+        if (!currentCourse) return undefined;
+        return graphData[currentCourse];
+    }, [currentCourse]);
 
     const getPrereqText = useCallback((prereq: Nodes | null): JSX.Element => {
         if (!prereq) return <>None</>;
@@ -124,10 +126,10 @@ export default function HomeClient({
                 {parts.slice(1).map((el) => {
                     if (React.Children.count(el) > 0) {
                         return (
-                            <>
+                            <span key={color}>
                                 {" "}
                                 <strong>{prereq.type}</strong> <span>{el}</span>
-                            </>
+                            </span>
                         );
                     }
                 })}
@@ -140,139 +142,27 @@ export default function HomeClient({
     const prerequisitesText = useMemo(() => {
         if (!infoData) return <>None</>;
         return getPrereqText(infoData.prereq_tree);
-    }, [getPrereqText, infoCourse, infoData]);
+    }, [getPrereqText, currentCourse, infoData]);
 
-    const infoLink = infoCourse
+    const infoLink = currentCourse
         ? `https://catalog.njit.edu/search/?search=${encodeURIComponent(
-              infoCourse
+              currentCourse
           )}`
         : "";
 
     return (
         <div className="flex h-dvh bg-gradient-to-br from-slate-50 via-white to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950">
-            {/* Sidebar */}
-            <aside className="w-80 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-r border-slate-200 dark:border-slate-800 flex flex-col shadow-xl">
-                <div className="p-6 border-b border-slate-200 dark:border-slate-800">
-                    <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                        ViewNJIT
-                    </h1>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                        Visualize classes and prereqs
-                    </p>
-                </div>
-
-                {/* Search */}
-                <div className="p-4 border-b border-slate-200 dark:border-slate-800">
-                    <div className="relative">
-                        <input
-                            type="text"
-                            placeholder="Search courses..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full px-4 py-2.5 pl-10 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                        />
-                        <svg
-                            className="absolute left-3 top-3 h-5 w-5 text-slate-400"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                            />
-                        </svg>
-                    </div>
-                </div>
-
-                {/* Department Filter */}
-                <div className="p-4 border-b border-slate-200 dark:border-slate-800">
-                    <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                        Filter by Department
-                    </label>
-                    <select
-                        value={selectedDept}
-                        onChange={(e) => setSelectedDept(e.target.value)}
-                        className="mt-2 w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
-                    >
-                        <option value="">All Departments</option>
-                        {departments.map((dept) => (
-                            <option key={dept} value={dept}>
-                                {dept}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-
-                {/* Show All Button */}
-                <div className="px-4 pt-4">
-                    <button
-                        onClick={() => {
-                            setSelectedCourse("");
-                            setInfoCourse("");
-                        }}
-                        className={`w-full px-4 py-2.5 rounded-xl font-medium transition-all ${
-                            selectedCourse === ""
-                                ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/25"
-                                : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
-                        }`}
-                    >
-                        View{" "}
-                        {Math.min(displayedCourses.length, MAX_GRAPH_COURSES)}{" "}
-                        Results
-                    </button>
-                </div>
-
-                {/* Course List */}
-                <div className="flex-1 overflow-y-auto p-4">
-                    <div className="space-y-1">
-                        {displayedCourses.slice(0, 100).map((course) => (
-                            <button
-                                key={course}
-                                onClick={() => {
-                                    setSelectedCourse(course);
-                                    setInfoCourse(course);
-                                }}
-                                className={`w-full text-left px-4 py-2.5 rounded-lg font-medium transition-all ${
-                                    selectedCourse === course
-                                        ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md"
-                                        : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
-                                }`}
-                            >
-                                {course}
-                            </button>
-                        ))}
-                        {displayedCourses.length > 100 && (
-                            <p className="text-center text-sm text-slate-500 py-2">
-                                And {displayedCourses.length - 100} more...
-                            </p>
-                        )}
-                    </div>
-                </div>
-
-                {/* Legend */}
-                <div className="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50">
-                    <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">
-                        Legend
-                    </h3>
-                    <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                            <div className="w-8 h-0.5 bg-amber-500"></div>
-                            <span className="text-sm text-slate-600 dark:text-slate-400">
-                                AND connection
-                            </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <div className="w-8 h-0.5 bg-sky-500 animate-pulse"></div>
-                            <span className="text-sm text-slate-600 dark:text-slate-400">
-                                OR connection
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </aside>
+            <MainSidebar
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
+                selectedDept={selectedDept}
+                setSelectedDept={setSelectedDept}
+                departments={departments}
+                displayedCourses={displayedCourses}
+                selectedCourse={selectedCourse}
+                setSelectedCourse={setSelectedCourse}
+                setCurrentCourse={setCurrentCourse}
+            />
 
             {/* Main Content */}
             <main className="flex-1 flex">
@@ -320,98 +210,25 @@ export default function HomeClient({
                             <CourseGraph
                                 graphData={graphData}
                                 selectedCourse={selectedCourse || undefined}
-                                infoCourse={infoCourse}
+                                infoCourse={currentCourse}
                                 visibleCourses={graphCourses}
                                 onCourseSelect={(course) => {
                                     // setSelectedCourse(course);
-                                    setInfoCourse(course);
+                                    setCurrentCourse(course);
                                 }}
                             />
                         </div>
                     </div>
                 </div>
 
-                {/* Course Sidebar */}
-                <aside className="w-80 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-100 dark:border-slate-700 shadow-xl absolute rounded-md shadow-xl ml-7 top-28">
-                    <div className="p-2 pl-6 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
-                        {infoCourse && infoData ? (
-                            <>
-                                <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
-                                    {infoCourse}
-                                </h3>
-                            </>
-                        ) : (
-                            <div className="text-sm text-slate-500 dark:text-slate-400 mt-2">
-                                Select a course to see details
-                            </div>
-                        )}
-                        <button
-                            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                            className="p-1 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className={`h-5 w-5 text-slate-500 transition-transform ${
-                                    isSidebarOpen ? "rotate-180" : ""
-                                }`}
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                            >
-                                <path
-                                    fillRule="evenodd"
-                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                    clipRule="evenodd"
-                                />
-                            </svg>
-                        </button>
-                    </div>
-
-                    <div
-                        className={`transition-all duration-300 ease-in-out overflow-scroll ${
-                            isSidebarOpen
-                                ? "max-h-96"
-                                : "overflow-hidden max-h-0"
-                        }`}
-                    >
-                        <div className="p-6 pt-2 space-y-4">
-                            <div className="text-sm text-slate-700 dark:text-slate-300">
-                                <span className="font-semibold text-slate-600 dark:text-slate-400">
-                                    Name:
-                                </span>{" "}
-                                {infoData && infoData.title}
-                            </div>
-                            <div className="text-sm text-slate-700 dark:text-slate-300">
-                                <span className="font-semibold text-slate-600 dark:text-slate-400">
-                                    Description:
-                                </span>{" "}
-                                {infoData && infoData.desc}
-                            </div>
-                            <div className="text-sm text-slate-700 dark:text-slate-300">
-                                <span className="font-semibold text-slate-600 dark:text-slate-400">
-                                    Link:
-                                </span>{" "}
-                                {infoCourse ? (
-                                    <a
-                                        href={infoLink}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        className="text-indigo-600 dark:text-indigo-400 hover:underline"
-                                    >
-                                        {infoCourse} -&gt;
-                                    </a>
-                                ) : (
-                                    "no link"
-                                )}
-                            </div>
-                            <div className="text-sm text-slate-700 dark:text-slate-300">
-                                <span className="font-semibold text-slate-600 dark:text-slate-400">
-                                    Prerequisites:
-                                </span>{" "}
-                                {infoCourse ? prerequisitesText : "None"}
-                            </div>
-                        </div>
-                    </div>
-                </aside>
+                <CourseSidebar
+                    currentCourse={currentCourse}
+                    infoData={infoData}
+                    isSidebarOpen={isSidebarOpen}
+                    setIsSidebarOpen={setIsSidebarOpen}
+                    prerequisitesText={prerequisitesText}
+                    infoLink={infoLink}
+                />
             </main>
         </div>
     );
