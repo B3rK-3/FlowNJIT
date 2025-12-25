@@ -446,7 +446,7 @@
         {
             "course": "BIOL 355",
             "prereqs": "Prerequisites: (BIOL\u00a0201 and BIOL\u00a0202 or R120\u00a0201 and R120\u00a0202) and (BIOL\u00a0205 and BIOL\u00a0206 or R120 205 and R120 206) and CHEM\u00a0126 or R160\u00a0115.",
-            "desc": "Prerequisites: (BIOL\u00a0201 and BIOL\u00a0202 or R120\u00a0201 and R120\u00a0202) and (BIOL\u00a0205 and BIOL\u00a0206 or R120 205 and R120 206) and CHEM\u00a0126 or R160\u00a0115.  A study of eukaryotic cell structure and function, including cytoskeletal function, membrane properties and transmembrane transport, cell communication and signaling, cell cycle regulation, and cancer. Emphasis will be placed on reading primary literature in order to understand current findings in biological and biomedical research."
+            "desc": "Prerequisites: (BIOL\u00a0201 and BIOL\u00a0202 or R120\u00a0201 and R120\u00a0202) and (BIOL\u00a0205 and BIOL\u00a0206 or R120 205 and R120 206) and (CHEM\u00a0126 or R160\u00a0115).  A study of eukaryotic cell structure and function, including cytoskeletal function, membrane properties and transmembrane transport, cell communication and signaling, cell cycle regulation, and cancer. Emphasis will be placed on reading primary literature in order to understand current findings in biological and biomedical research."
         },
         {
             "course": "BIOL 375",
@@ -1627,7 +1627,272 @@
             "desc": "Prerequisites: ENGL\u00a0102 with a grade of C or higher, and one History and Humanities GER 200 level course with a grade of C or higher.  Intended for Communication and Media majors only. For professional and technical communication majors only. Provides students with a capstone experience. Offers PTC students the opportunity to enhance their understanding of communication through their integration of skills and knowledge gained in prior courses. The resultant research thesis or field project, of substantial length and originality, represents the culmination of the undergraduate disciplinary experience. Utilizing both a seminar and workshop approach, entails intense and sustained collaboration between student and instructor, and cooperation among students."
         }
     ],
-
+ "CS": [
+        {
+            "course": "CS 100",
+            "desc": "An introduction to programming and problem solving skills using Python or other very high level language. Topics include basic strategies for problem solving, constructs that control the flow of execution of a program and the use of high level data types such as lists, strings and dictionaries in problem representation. The course also presents an overview of selected topics in computing, such as networking and databases."
+        },
+        {
+            "course": "CS 101",
+            "desc": "An introductory course that is designed for engineering freshmen. This course introduces students to the engineering problem solving process in the context of MATLAB. The emphasis is on the logical analysis of a problem and the formulation of a computer program leading to its solution. Topics include basic concepts of computer systems, algorithm design, programming languages and data abstraction. At the end of class, a comparison between MATLAB and C/C++ will be discussed to provide students a better understanding of the general concept of computer programming."
+        },
+        {
+            "course": "CS 104",
+            "desc": "An introductory course in computer science with applications in computer graphics for architecture. Emphasis on programming methodology using a high level language as the vehicle to illustrate the concepts. Topics include basic concepts of computer systems, software engineering, algorithm design, programming languages and data abstraction, with applications."
+        },
+        {
+            "course": "CS 106",
+            "desc": "An introduction to programming and problem solving skills for non-computing majors using Python programming languages. Topics include basic strategies for problem solving, constructs that control the flow execution of a program and the use of high level data types such as lists, strings, and dictionaries in problem representation. The course also presents an overview of selected \"big idea\" topics in computing."
+        },
+        {
+            "course": "CS 113",
+            "desc": "Prerequisites: CS\u00a0100 or CS\u00a0103 with a grade C or better. Intensive introduction to computer science. Problem solving decomposition. Writing, debugging, and analyzing computer programs. Introduction to arrays and lists. Iteration and recursion. The Java language is introduced and used to highlight these concepts. A student receiving degree credit for CS\u00a0113 cannot receive degree credit for CS\u00a0115."
+        },
+        {
+            "course": "CS 114",
+            "desc": "Prerequisite: CS\u00a0113 with a grade C or better. A study of advanced programming topics with logical structures of data, their physical representation, and the design of computer algorithms operating on the structures. Course covers program specifications, correctness and efficiency, data abstraction, and algorithm analysis. Students receiving degree credit for CS\u00a0114 cannot receive degree credit for CS\u00a0116 or CS\u00a0505."
+        },
+        {
+            "course": "CS 115",
+            "desc": "Fundamentals of computer science are introduced, with emphasis on programming methodology and problem solving. Topics include basic concepts of computer systems, software engineering, algorithm design, programming languages and data abstraction, with applications. The high level language C++ is fully discussed and serves as the vehicle to illustrate many of the concepts. CS majors should enroll in CS\u00a0113."
+        },
+        {
+            "course": "CS 116",
+            "desc": "Prerequisite: CS\u00a0115 with a grade C or better. A study of advanced programming topics with logical structures of data, their physical representation, design and analysis of computer algorithms operating on the structures, and techniques for program development and debugging. Course covers program specifications,  correctness and efficiency, data abstraction, basic aspects of simple data structures, internal searching and sorting, recursion and string processing. Algorithmic analysis is also discussed. Students receiving degree credit for CS\u00a0116 cannot receive degree credit for CS\u00a0505 or CS\u00a0114."
+        },
+        {
+            "course": "CS 118",
+            "desc": "Prerequisites: CS\u00a0100 with a grade C or better.  The course uses Python as primary language to study  advanced programming topics with logical structures of data, their physical representation, and the design of computer algorithms operating on the structures. The course covers program specifications, correctness and efficiency, data abstraction, and algorithm analysis. Students receiving degree credit for CS\u00a0118 cannot receive degree credit for CS\u00a0505, CS114, or CS\u00a0116."
+        },
+        {
+            "course": "CS 241",
+            "desc": "Prerequisites: CS\u00a0114 and MATH\u00a0112 with a grade C or better.  An introduction to the foundations of computer science with emphasis on the development of  techniques for the design and proof of correctness of algorithms and the analysis of their computational complexity. Reasoning techniques based on propositional and predicate logic and relational calculus operations with applications to databases will also be introduced. Auxiliary topics such as combinatorics of finite sets, functions and relations, and graph-theory definitions and graph storage alternatives will also be examined."
+        },
+        {
+            "course": "CS 280",
+            "desc": "Prerequisites: CS\u00a0114 or CS\u00a0116 or IT\u00a0114 or equivalent with a grade C or better. Conceptual study of programming language syntax, semantics and implementation. Course covers language definition structure, data types and structures, control structures and data flow, run-time consideration, and interpretative languages."
+        },
+        {
+            "course": "CS 288",
+            "desc": "Prerequisites: CS\u00a0100 and CS\u00a0280 with a grade C or better. The course covers Linux programming with Apache Web and MySql database using Php/Python and C as primary languages. It consists of four stages: basic tools such as Bash and C programming; searching trees and matrix computing, end-to-end applications such as one that constantly presents top 100 stocks; and extending the applications to run on multiple machines. The course provides students with hands-on experience for programming relatively large applications."
+        },
+        {
+            "course": "CS 301",
+            "desc": "Prerequisites: CS\u00a0114 and (MATH\u00a0333 or MATH\u00a0341) with a grade C or better. This course is designed for CS BS students to equip them with introductory principles as well as hands-on skills that are required to solve data science problems. The first part of the course focuses on learning models, formalism, and algorithmic techniques that are popular in data science and heavily used in practice. In the second part of the course, students are introduced to data science tools (e.g., Excel, Python)."
+        },
+        {
+            "course": "CS 331",
+            "desc": "Prerequisites: CS\u00a0114 or CS\u00a0116 or IT\u00a0114 or equivalent with a grade C or better. This course provides an introduction to modern database systems, covering database system architecture, data models, the Entity-Relationship model, the Relational model, a formal query language (Relational Algebra) and the standard database language SQL, database design theory (functional dependencies and normal forms), database storage, and transaction processing. Students will learn how to design, create, query and update a database through a small project using SQL."
+        },
+        {
+            "course": "CS 332",
+            "desc": "Prerequisites: CS\u00a0114 or CS\u00a0116 or IT\u00a0114 or equivalent with a grade C or better. Organization of operating systems covering structure, process management and scheduling; interaction of concurrent processes; interrupts; I/O, device handling; memory and virtual memory management and file management."
+        },
+        {
+            "course": "CS 337",
+            "desc": "Prerequisites: CS\u00a0114 and (MATH\u00a0333 or MATH\u00a0341) with a grade C or better. Introduction to probability models and techniques useful in computer science. Performance evaluation, discrete-event simulation, classification and optimization are covered."
+        },
+        {
+            "course": "CS 341",
+            "desc": "Prerequisites: (CS\u00a0241 or MATH\u00a0226) and CS\u00a0280 with a grade C or better. This course provides an introduction to automata theory, computability theory, and complexity theory. Theoretical models such as finite-state machines, push-down stack machines, and Turing machines are developed and related to issues in programming language theory.  Also, the course covers undecidability and complexity classes P, NP, and NPC."
+        },
+        {
+            "course": "CS 350",
+            "desc": "Prerequisite: CS\u00a0280  with a grade C or better. Students learn an in-depth understanding of computer internals from a programmer's perspective. It delves into the design and construction of internal hardware to execute programmers' instructions written in the high-level language C. The course covers essential programming components, including assignments, branches, arithmetic and logic operations, loops, functions, and recursions. Assembly language constructs are presented to correspond with their high-level language counterparts, which are translated into hardware using digital logic. This course explores a sequential x86-based machine, pipelined computers, cache memory, main memory, virtual memory and its translation of logical address to linear address and to physical address."
+        },
+        {
+            "course": "CS 351",
+            "desc": "Prerequisites: CS\u00a0241 and CS\u00a0356 with a grade C or better. This course will give a broad overview of cybersecurity. There are two main goals of this course. First, students will learn fundamental concepts of cybersecurity. Second, this course will help students gain knowledge of the applications to computer systems and communication security. Topics include basics of cryptography, access control, malware, software security, storage and file security, operating-system security, database security and secure communication protocols."
+        },
+        {
+            "course": "CS 356",
+            "desc": "Prerequisite: CS\u00a0280 with a grade C or better. This course provides an introduction to computer networks, with a special focus on Internet architecture and protocols. Topics include layered-network architectures, addressing, naming, forwarding, routing, communication reliability, the client-server model, web and email protocols. Besides the theoretical foundations, students acquire practical experience by programming reduced versions of real Internet protocols."
+        },
+        {
+            "course": "CS 370",
+            "desc": "Prerequisites: CS\u00a0114, MATH\u00a0337, and CS\u00a0241 with a grade of C or better. Accelerated by the surge in data availability and computation capabilities, Artificial intelligence (AI) techniques have become central to modern technological areas, such as natural language processing, computer vision, and robotics. This course addresses the theoretical foundation, methodologies, and applications of AI. Key topics include planning and problem-solving, knowledge representation, reasoning and learning paradigms, and AI's core mechanisms and applications."
+        },
+        {
+            "course": "CS 375",
+            "desc": "Prerequisites: CS\u00a0100 and (CS\u00a0113 or CS\u00a0115) and (MATH\u00a0333 or MATH\u00a0341) with a grade C or better. This is an introductory course to Machine Learning (ML). It consists of: (i) A smooth, example-based presentation of the fundamental notions of ML via simple algorithms and visualizable \"toy\" data sets. (ii) A tour of a selection of widely-used machine learning algorithms, including supervised, unsupervised, and reinforcement-based techniques, with applications on real data sets. The students are expected to implement basic algorithms and experiment with existing widely-used ML software libraries on real datasets. They will also gain exposure to the full development of an ML system via a course project."
+        },
+        {
+            "course": "CS 388",
+            "desc": "Prerequisite: CS\u00a0288  with a grade C or better. This course introduces mobile application development for the Android platform. Students will learn skills necessary for creating and deploying applications with the Android Software Development Kit (SDK). The course is designed to introduce and familiarize students with programming in the Android environment. It starts with an examination of the basic components and concepts that define the Android platform, and then moves on to cover the specific structure that comprises an Android application. An overview of the most common tools and techniques for writing Android applications is included. The Android approach to user interfaces is described along with a discussion of some of the more common user-interface elements. Storage strategies for persistent information are also covered, including the use of the available SQLite Database features. The unique characteristics of programming for a mobile environment are introduced and explained. Hands on experience in the form of exercises and programming projects are included throughout the course to reinforce material that has been presented in lecture form."
+        },
+        {
+            "course": "CS 408",
+            "desc": "Prerequisite: CS\u00a0351 with a grade C or better. Covers security requirements for telecommunication over the Internet and other communication networks, various conventional and public-key encryption protocols, digital encryption standard, RSA and EIGamal cryptographic systems, digital signature algorithm and analysis of its cryptoimmunity, and access-sharing schemes."
+        },
+        {
+            "course": "CS 434",
+            "desc": "Prerequisite: CS\u00a0331 with a grade C or better. This course will expand students' SQL knowledge and enhance their database programming skills. It covers advanced data models and NoSQL database management systems (DBMSs), such as object-oriented, document-based, tree-based and graph DBMSs, and Data Warehousing. Students will learn and apply a procedural database language, gain experience with Extract-Transform-Load (ETL) processes, and explore a non-traditional DBMS."
+        },
+        {
+            "course": "CS 435",
+            "desc": "Prerequisites: CS\u00a0241 and CS\u00a0288 with a grade C or better. Advanced topics in data structures and algorithms, involving sequences, sets, and graphs such as searching, sorting, order statistics, balanced search tree operations, hash tables, graph traversals, graph connectivity and path problems. Algebraic and numeric algorithms. Performance measures, analysis techniques, and complexity of such algorithms."
+        },
+        {
+            "course": "CS 438",
+            "desc": "Prerequisites: (CS\u00a0114 or CS\u00a0116) and MATH\u00a0337 with a grade C or better. This course introduces fundamental concepts of interactive graphics oriented toward computer-aided design systems. Such systems emerge in engineering, architecture, and manufacturing. Topics include computer data structures for representation of two- and three-dimensional objects and algorithms for definition, modification, and display of these objects in applications. This course will also discuss a selection of special topics in interactive graphics."
+        },
+        {
+            "course": "CS 444",
+            "desc": "Prerequisites: CS\u00a0288 and (CS\u00a0301 or DS\u00a0340), all with with a grade of C or better. This course provides a broad coverage of topics on big data generation, transfer, storage, management, computing, and analytics with focus on state-of-the-art technologies and tools used in big data systems such as Hadoop. Real-life big-data applications and workflows in various domains are introduced as use cases to illustrate the development and execution of emerging big data-oriented solutions using HDFS, HBase, MapReduce/Spark, etc. deployed in cloud-based cluster environments."
+        },
+        {
+            "course": "CS 474",
+            "desc": "Prerequisites: CS\u00a0370 or CS\u00a0375, with a grade of C or better.  This course covers current topics and trends in generative artificial intelligence including principles behind building and training a variety of generative, language, and multimodal models.  Students will iteratively design and implement course projects for hands-on experience with these emerging technologies. These projects will draw on Python programming skills and machine learning optimization techniques."
+        },
+        {
+            "course": "CS 482",
+            "desc": "Prerequisite: CS\u00a0301 or DS\u00a0340 with a grade C or better. The course covers the concepts and principles of advanced data mining systems design; presents methods for association and dependency analysis, classification; prediction; and clustering analysis."
+        },
+        {
+            "course": "CS 485",
+            "desc": "Restriction: junior standing and/or department approval. The study of new and/or advanced topics in an area of computer science not regularly covered in any other CS course. The precise topics to be covered in the course, along with prerequisites, will be announced in the semester prior to the offering of the course. A student may register for no more than two semesters of Special Topics."
+        },
+        {
+            "course": "CS 487",
+            "desc": "Prerequisites: CS\u00a0388, with a grade of C or better.  Pre or Corequisites: CS\u00a0350.  This course covers current topics in the security and reliability of smartphones, and smartphone platform-based devices. The topics include but are not limited to understanding the software and hardware platforms; static and dynamic analyses for devices and apps; effective testing of devices and apps; formulating and launching attacks against these devices or apps, and understanding the security, privacy, and reliability risks that users expose themselves to when using such devices. The professor and students will present recent papers; discuss and critique papers. Assignments include programming for the platform and running an analysis tool, designed to expose security and reliability issues, on popular platforms/apps/devices."
+        },
+        {
+            "course": "CS 488",
+            "desc": "Restriction: Open only to Computer Science majors and who have the prior approval of the department and the CS faculty member who will guide the independent study. Independent studies, investigations, research, and reports on advanced topics in computer science. Students must prepare, in collaboration with their faculty mentor and in the semester prior to enrolling in this course, a detailed plan of topics and expected accomplishments for their independent study. This must have the approval of both the department and the faculty mentor. A student may register for no more than one semester of Independent Study."
+        },
+        {
+            "course": "CS 489",
+            "desc": "Prerequisites: CS\u00a0488 and project proposal approved by the instructor.  This course is for students who have completed an independent study course and wish to delve deeper into research. It is particularly well-suited for those considering a Master's or a PhD degree. This course provides a platform to broaden and refine their research skills. Under the mentorship of faculty, students will further their investigative journey, culminating in a comprehensive research project that showcases their scholarly development and prepares them for the rigors of postgraduate study."
+        },
+        {
+            "course": "CS 490",
+            "desc": "Prerequisites: CS\u00a0280 and CS\u00a0288 with a grade C or better. This course focuses on the methodology for developing software systems. Methods and techniques for functional requirements analysis and specifications, design, coding, testing and proving, integration and maintenance are discussed."
+        },
+        {
+            "course": "CS 491",
+            "desc": "Prerequisite: CS\u00a0490 with a grade C or better. An opportunity for the student to integrate the knowledge and skills gained in previous computer science work into a team-based project. The project involves investigation of current literature as well as computer implementation of either a part of a large program or the whole of a small system. Students receiving degree credit for CS\u00a0491 cannot receive degree credit for IT\u00a0491."
+        },
+        {
+            "course": "CS 506",
+            "desc": "Prerequisites: No formal prerequisites \u2013 The course assumes basic knowledge of a higher-level programming language. Introduction to the concepts of iteration, asymptotic performance analysis of algorithms, recursion, recurrence relations, graphs, automata and logic, and also surveys the main data models used in computer science including trees, lists, sets, and relations. Programming assignments are given."
+        },
+        {
+            "course": "CS 602",
+            "desc": "Prerequisite: advanced Web-based programming with an emphasis on the Java language and platform. No prior knowledge of Java is required but students are expected to have a good understanding of object-oriented programming concepts such as encapsulation, inheritance, and polymorphism, experience with C++. Basic constructs and syntax and then the core advanced features. Topics include: networking and sockets, remote method invocation (RMI), database connectivity (JDBC), Java Beans, multi-threading and lighweight components (Swing). Common gateway interface (CGI) languages and browser scripting (JavaScript and VBScript) are discussed when used as a complement to the functionality of the Java language. Emphasis is on the latest version of Java, both deprecated methods and newly introduced features are discussed."
+        },
+        {
+            "course": "CS 608",
+            "desc": "This course involves computational methods providing secure Internet communication. Among the topics covered are: Security threats in communication systems; conventional cryptography: substitution and transposition codes; distribution of secret key over the Internet; principles of public-key cryptography; RSA and other public-key cryptographic methods; and digital signature protocol."
+        },
+        {
+            "course": "CS 610",
+            "desc": "Prerequisites: CS\u00a0114 and CS\u00a0241 or equivalents (see undergraduate catalog for description). Intensive study of the fundamentals of data structures and algorithms. Presents the definitions, representations, processing algorithms for data structures, general design and analysis techniques for algorithms. Covers a broad variety of data structures, algorithms and their applications including linked lists, various tree organizations, hash tables, strings, storage allocation, algorithms for searching and sorting, and a selected collection of other algorithms. Programs are assigned to give students experience in algorithms, data structure design and implementation."
+        },
+        {
+            "course": "CS 630",
+            "desc": "Prerequisites: No formal prerequisites - The course assumes knowledge of topics of CS\u00a0332 and CS\u00a0505 or equivalent courses. An intensive study of computer operating system design including multiprogramming, time-sharing, real-time processing, job and task control, synchronization of concurrent processes and processors, resource scheduling, protection, and management of hierarchical storage."
+        },
+        {
+            "course": "CS 631",
+            "desc": "Prerequisites: knowledge of C and data structures. Acquaintance with fundamental notions of relational database technology. Mathematical properties and usage of database programming languages. Methods of database design and conceptual modeling. Methods of physical storage for database information. Fundamental notions of concurrency control and recovery in database systems."
+        },
+        {
+            "course": "CS 632",
+            "desc": "Prerequisites: CS\u00a0631 and good knowledge of a high-level programming language. Covers the rapidly changing concepts and principles of modern database systems and database programming based on SQL. Additional topics may include: advanced data modeling, OODBs, parallel and distributed database systems, XML and NO-SQL databases, Web-database systems, active databases, multimedia and text databases, database security, query optimization, indexing techniques, concurrency control, system performance, and data warehousing."
+        },
+        {
+            "course": "CS 634",
+            "desc": "This course covers the principles of data mining system design and implementation. It presents methods for association and dependency analysis as well as classification, prediction, and clustering. Optional topics may include time series and graph mining, current trends in data mining, and data mining for scientific, medical and engineering applications."
+        },
+        {
+            "course": "CS 643",
+            "desc": "Prerequisites: CS\u00a0644 or DS\u00a0644 or CS\u00a0656 or ECE\u00a0637. The course presents a comprehensive view of cloud computing, from platforms and services to programming and infrastructure. The topics include: cloud computing platforms, with examples from Amazon Web Services (AWS), Google Cloud, and Microsoft Azure; cloud services for data analytics, machine learning, mobile computing, IoT, edge computing, security and privacy, and devops; programming frameworks for parallel computing in the cloud; distributed storage in the cloud; and virtualization and containerization. The course includes homework, programming assignments, and research paper presentations."
+        },
+        {
+            "course": "CS 645",
+            "desc": "Prerequisites: Students are expected to enter this course with a basic knowledge of operating systems, networking, algorithms, and data structures. Also, students should be able to program in Java and C/C++. The course covers fundamental principles of building secure systems and techniques to ensure data security and privacy. Topics include access control mechanisms, operating systems security, malicious code threats and software security, trusted computing, content protection, and database security . The course will also study existing technical approaches to protecting privacy, including Web anonymizers and ant-censorship tools, as well as policy and legal aspects of privacy."
+        },
+        {
+            "course": "CS 646",
+            "desc": "Prerequisites: CS\u00a0656 or ECE\u00a0637, and ability to program in Java and C/C++. This course covers the security of network protocols currently used on the internet. It seeks to familiarize students with common threats and network attacks, and provides an in-depth study of methods used to secure network communication. The course includes an applied component, which will help students gain practical experience in attacking and defending networked systems. Topics include authentication systems, and routing security, firewalls, intrusion detection, honeypots, wireless network security, malware, propagation and detection, and web security."
+        },
+        {
+            "course": "CS 647",
+            "desc": "Prerequisites: CS\u00a0645 or CS\u00a0646 or CS 696 or ECE\u00a0638 or approval of the instructor. This course covers advanced techniques that can be used for offensive or defensive goals in network, computer systems and applications. The course follows a ?learning by doing? teaching approach through extensive use of virtual machines with vulnerable operating systems and applications. Topics covered include system memory organizations, CPU registers, assembly language fundamentals, GNU and Immunity debuggers, fuzzing based security testing development of local and remote Linux and Windows exploits, shellcode development, stealthy attacks, bypassing memory protection techniques, network and wireless hacking techniques, and ethical and legal implications of cyber-attacks."
+        },
+        {
+            "course": "CS 648",
+            "desc": "Prerequisites: CS\u00a0656 or IT\u00a0640 or permission of the instructor. This course will prepare students for a real-life experience for operating and protecting computer networks, data communication, and data storage systems. The course will provide the student with a methodology to examine and investigate intrusions and security of data storage, data management, and data transmission systems as a part of an integrated network. It will explore the various interfaces of these systems from a technical, human, and investigative perspective, and the potential legal issues. The course will provide the student with various fundamental legal knowledge necessary for a cyber practitioner: (a) basic intellectual property law including trade secrets and patents; (b) foreign viewpoints of intellectual property and compliance to include EU privacy law; (c) U.S. law of electronic surveillance, electronic search, and stored communications; (d) government and workplace consensual search and surveillance and consent banners/agreements."
+        },
+        {
+            "course": "CS 656",
+            "desc": "The course introduces the protocols and standards of the TCP/IP suite that govern the functioning of the Internet. The material covered in class is a top-down approach on introduction, discussion, and analysis of protocols from the data-link layer to the application layer. Alternative protocols to the TCP/IP suite and new protocols adopted by this suite are discussed. Numerical examples related to network planning and proocol functioning are analyzed."
+        },
+        {
+            "course": "CS 657",
+            "desc": "Prerequisites: No formal prerequisites \u2013 The course assumes familiarity with the organization of a computer system and knowledge of topics of CS\u00a0505 or equivalent courses. Graduate-level introduction to computer graphics concepts, algorithms, and systems. Includes 2-D raster graphics, algorithms, 2-D and 3-D geometric transformations, 3-D viewing, curves and surfaces. Emphasis on PC-based graphics programming projects. Principles of interactive graphics systems in terms of the hardware, software and mathematics required for interactive image production."
+        },
+        {
+            "course": "CS 667",
+            "desc": "Prerequisites: CS\u00a0610 or CS\u00a0435 or doctoral student status or instructor permission. A comprehensive study of advanced algorithm design and analysis, with an emphasis on both foundational and cutting-edge techniques. Topics include approximation algorithms for hard computational problems, randomized algorithms and their analysis, and algorithms for real-time algorithmic problems. Students will also learn practical aspects of how to use and apply state-of-the-art software to solve combinatorial optimization problems that arise in operations research, logistics, resource allocation and other fields."
+        },
+        {
+            "course": "CS 669",
+            "desc": "Prerequisites: Linear algebra, basic probability, basic calculus, computer programming, or approval of instructor.  Experience with machine learning, artificial intelligence, or deep learning (e.g., CS\u00a0675, CS\u00a0670, CS\u00a0677) is recommended. This course covers current topics, key concepts, and classic and modern algorithms in reinforcement learning and contains both theory and applications. The topics include but are not limited to, Markov Decision Processes, exploration and exploitation, planning, value-based learning, policy gradient, etc. Students will present recent papers in reinforcement learning, and work on written and programming assignments and do a reinforcement learning project. After completing this course, students will be able to start using reinforcement learning for real world problems that can be specified as Markov Decision Processes."
+        },
+        {
+            "course": "CS 670",
+            "desc": "Prerequisites: No formal prerequisites - The course assumes proficiency in at least one programming language, preferably Python, and knowledge of topics of CS\u00a0506, DS\u00a0637. This course explores key representations, techniques, and computational models used to develop intelligent systems. Beginning with the historical developments of AI, the course covers problem-solving paradigms such as blind and heuristic search, knowledge representation, logic programming, constraint satisfaction, handling uncertainty, and optimization techniques. The course also examines foundational machine learning approaches, alongside applications in natural language processing, computer vision, and robotics. Additionally, the course addresses ethical considerations in AI, including bias, privacy, and the implications of AI for the workforce and society. Through theoretical study and hands-on implementations, students will gain a solid understanding of AI methodologies and their practical use in solving complex problems."
+        },
+        {
+            "course": "CS 683",
+            "desc": "This course gives the student the necessary background to allow her/him to manage software projects; this includes economic, managerial and organizational aspects. The essence of software engineering is not only to introduce a valuable software product, but to do so economically and competitively. Like any engineering discipline, software engineering depends critically on managerial, economic and organizational considerations. Students will learn software management technique, various software costing techniques including COCOMO and ROI, team organization and management, and various methods of software development including Cleanroom and Agile."
+        },
+        {
+            "course": "CS 684",
+            "desc": "This course discusses software faults and techniques to reduce faults and improve software quality. Software systems are some of the most complex human artifacts ever built and also some of the most critical means to ensure our safety, well being, and prosperity. This course teaches techniques to ensure software systems perform their function correctly. Topics include software specifications, goals of testing, techniques of test data selection, test oracle design, test data analysis, test lifecycle and quality impacts of testing."
+        },
+        {
+            "course": "CS 685",
+            "desc": "The software architecture defines the structure and interactions of software modules. This course provides a working knowledge of the terms, principles and methods of software architecture and module design. It explains the constraints on the design and the properties of capacity, response time, and consistency. The \"4+1\" architecture model is taught with architectural styles, interface isolation, decoupling, reuse, agile design with software patterns, data structures, queuing effects, design simplification and refactoring. The non-functional requirements of reliability, performance and power consumption, component based design and good industry practices for documenting and managing the architectural process are taught."
+        },
+        {
+            "course": "CS 698",
+            "desc": "Prerequisites: Determined by the nature of the topic area. The course covers special emerging topics that are not offered as regular courses."
+        },
+        {
+            "course": "CS 700B",
+            "desc": "Prerequisites: Approval of the project advisor is required for registration.  Pre or Corequisites: INTD 799.  Restrictions: Restricted to Master's students only.  Experimental and/or theoretical investigation of a relevant topic in computer science. A written report must be submitted to the project advisor. The student cannot register in CS\u00a0700B more than once and the incomplete (I) grade is not allowed."
+        },
+        {
+            "course": "CS 701B",
+            "desc": "Prerequisites: CS\u00a0700B and approval of the thesis advisor who must be the same as the student's advisor in CS\u00a0700B.  Pre or Corequisites: INTD 799.  Experimental and/or theoretical investigation of a relevant topic in computer science that can lead to a refereed publication. The MS thesis topic should be continuation of the student's work in CS\u00a0700B. A written thesis must be orally defended and approved by a committee of at least three faculty members."
+        },
+        {
+            "course": "CS 725",
+            "desc": "Restrictions: Restricted to doctoral students only.  Approval of the academic advisor is required for registration. Students working on their PhD dissertation cannot register for both CS\u00a0725 and CS\u00a0726 with the same faculty. This special course covers areas of study in which one or more students may be interested but there is not sufficiently broad interest to warrant a regular course offering. Students may not register for this course more than once."
+        },
+        {
+            "course": "CS 726",
+            "desc": "Restrictions: Restricted to doctoral students only.  Approval of the academic advisor is required for registration. Students working on their PhD dissertation cannot register for both CS\u00a0725 and CS\u00a0726 with the same faculty. This special course covers areas of study in which one or more students may be interested but there is not sufficiently broad interest to warrant a regular course offering. Students may not register for this course more than once."
+        },
+        {
+            "course": "CS 785",
+            "desc": "This seminar course examines in-depth recent research literature in an area of computer science. The selected topic and course prerequisites are announced before the beginning of the semester."
+        },
+        {
+            "course": "CS 790A",
+            "desc": "Co-requisite: CS\u00a0791. Approval of the dissertation advisor is required for registration. Experimental and/or theoretical investigation of a relevant topic in computer science. For PhD students who have successfully defended their dissertation proposal. The student must register in CS\u00a0790A every semester until successful dissertation defense. A written dissertation must be defended and approved by a committee of at least five members."
+        },
+        {
+            "course": "CS 791",
+            "desc": "A seminar in which faculty, students, and invited speakers will present summaries of advanced topics in computer science. In the course, students and faculty will discuss research procedures, dissertation organization, and content. Students engaged in research will present their own problems and research progress for discussion and criticism."
+        },
+        {
+            "course": "CS 792",
+            "desc": "Co-requisite: CS\u00a0791. Approval of the dissertation advisor is required for registration. Preliminary experimental and/or theoretical investigation of a relevant topic in computer science. For students who have passed the qualifying examination but have not defended the dissertation proposal.  Permission is needed of the academic advisor as well for students who have completed the required coursework but have not passed the qualifying examination."
+        }
+    ],
     "DD": [
         {
             "course": "DD 264",

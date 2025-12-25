@@ -122,10 +122,16 @@ def extract_sections_from_html(html_content):
 
             honors_sections = False
 
-            header_split = h4.get_text(strip=True).replace(' - ', '-').replace(' -', '-').replace('- ', '-').split('-')
-            header = header_split[1]
-            if header_split[-1].lower() == 'honors':
+            header: str = h4.get_text(strip=True)
+            if header.lower().endswith('honors'):
                 honors_sections = True
+                right_dash = header.rfind('-')
+                left_dash = header.find('-')
+
+                header = header[left_dash + 1:right_dash].strip()
+            else:
+                left_dash = header.find('-')
+                header = header[left_dash + 1:].strip()
 
             # Find the next table after this h4
             current = h4.next_sibling

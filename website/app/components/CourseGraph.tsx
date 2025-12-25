@@ -17,7 +17,7 @@ import {
 } from "@xyflow/react";
 import ELK from "elkjs/lib/elk.bundled.js";
 import "@xyflow/react/dist/style.css";
-import { CourseInfo, CourseStructure } from "../constants";
+import { CourseInfo, CourseStructure, Nodes } from "../constants";
 
 // Custom node component for courses
 function CourseNode({ data }: NodeProps) {
@@ -273,7 +273,7 @@ export default function CourseGraph({
         };
 
         const processPrereq = (
-            prereq: PrereqChild,
+            prereq: Nodes,
             depth: number,
             _parentType: "AND" | "OR",
             siblingIndex: number
@@ -283,16 +283,17 @@ export default function CourseGraph({
                 const courseName = prereq.course;
                 ensureCourseNode(courseName);
 
-                const coursePrereqs =
+                const courseInfo =
                     expandAllPrereqs && graphData[courseName]
                         ? graphData[courseName]
                         : undefined;
 
                 if (
-                    coursePrereqs &&
-                    coursePrereqs.children.length &&
+                    courseInfo &&
+                    courseInfo.prereq_tree &&
                     !expandedCourses.has(courseName)
                 ) {
+                    const coursePrereqs = courseInfo.prereq_tree;
                     expandedCourses.add(courseName);
                     coursePrereqs.children.forEach((child, idx) => {
                         const childId = processPrereq(
@@ -317,46 +318,6 @@ export default function CourseGraph({
                 }
 
                 return courseName;
-            }
-
-            // Handle legacy string format (backward compatibility)
-            if (typeof prereq === "string") {
-                ensureCourseNode(prereq);
-
-                const coursePrereqs =
-                    expandAllPrereqs && graphData[prereq]
-                        ? graphData[prereq]
-                        : undefined;
-
-                if (
-                    coursePrereqs &&
-                    coursePrereqs.children.length &&
-                    !expandedCourses.has(prereq)
-                ) {
-                    expandedCourses.add(prereq);
-                    coursePrereqs.children.forEach((child, idx) => {
-                        const childId = processPrereq(
-                            child,
-                            depth + 1,
-                            coursePrereqs.type,
-                            idx
-                        );
-                        if (childId) {
-                            const offsetSign = idx % 2 === 0 ? 1 : -1;
-                            const offsetStep = Math.floor(idx / 2) + 1;
-                            const edgeOffset =
-                                offsetSign * offsetStep * Math.random() * 16;
-                            addEdge(
-                                childId,
-                                prereq,
-                                coursePrereqs.type,
-                                edgeOffset
-                            );
-                        }
-                    });
-                }
-
-                return prereq;
             }
 
             // Handle AND/OR nodes

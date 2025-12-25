@@ -69,7 +69,7 @@ def fetch_courses(subject, term="202610", max_results="100", offset="0"):
 # --- Usage ---
 if __name__ == "__main__":
     # Load subjects
-    input_file = r"d:\Projects\NJIT_Course_FLOWCHART\NJITCourse4LetterAbbr.json"
+    input_file = r"d:\Projects\NJIT_Course_FLOWCHART\data\NJITCourse4LetterAbbr.json"
     with open(input_file, 'r') as f:
         subjects_list = json.load(f)
 
@@ -77,7 +77,7 @@ if __name__ == "__main__":
 
     for item in subjects_list:
         subj = item.get("SUBJECT")
-        if subj:
+        if subj == 'CS':
             print(f"Fetching courses for {subj}...")
             # Fetch courses, increasing max results to capture all
             response_data = fetch_courses(subj, max_results="500")

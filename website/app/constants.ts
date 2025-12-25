@@ -1,7 +1,7 @@
 /** 1) AND/OR node */
 export interface AndOrNode {
     type: "AND" | "OR";
-    children: NonEmptyArray<Nodes>;
+    children: Nodes[];
 }
 
 /** 3) COURSE node */
@@ -81,7 +81,7 @@ export interface SkillNode {
 }
 
 /** Union of all structured nodes */
-type Nodes =
+export type Nodes =
     | AndOrNode
     | CourseNode
     | PlacementNode
@@ -117,8 +117,8 @@ export type RestrictionKind =
     | "OTHER";
 
 export interface CourseInfo {
-    prereq_tree: AndOrNode | undefined;
-    coreq_tree: AndOrNode | undefined;
+    prereq_tree: AndOrNode | null;
+    coreq_tree: AndOrNode | null;
     restrictions: Restriction[];
     desc: string;
     title: string;
@@ -128,3 +128,23 @@ export interface CourseInfo {
 export interface CourseStructure {
     [courseName: string]: CourseInfo;
 }
+
+export const getRandomInt = (min: number, max: number) => {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+};
+
+export const generateRandomRGB = () => {
+    const r = getRandomInt(0, 255);
+    const g = getRandomInt(0, 255);
+    const b = getRandomInt(0, 255);
+
+    return `rgb(${r}, ${g}, ${b})`;
+};
+
+export const generateNonBlueColor = () => {
+  const r = getRandomInt(100, 255); // High Red
+  const g = getRandomInt(100, 255); // High Green
+  const b = getRandomInt(0, 80);    // Keep Blue very low
+  
+  return `rgb(${r}, ${g}, ${b})`;
+};

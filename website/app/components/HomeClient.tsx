@@ -1,11 +1,19 @@
 "use client";
 
-import { useState, useMemo, useCallback, useEffect } from "react";
+import React, { useState, useMemo, useCallback, useEffect, JSX } from "react";
 import dynamic from "next/dynamic";
-import graphData from "../../n_graph.json";
+import graphDataRaw from "../../graph.json";
+import {
+    CourseStructure,
+    generateNonBlueColor,
+    generateRandomRGB,
+    getRandomInt,
+    Nodes,
+} from "../constants";
+import { Span } from "next/dist/trace";
 
-const MAX_GRAPH_COURSES = 40;
-
+const MAX_GRAPH_COURSES = 100;
+const graphData = graphDataRaw as CourseStructure;
 // Dynamic import to avoid SSR issues with React Flow
 const CourseGraph = dynamic(() => import("./CourseGraph"), {
     ssr: false,
@@ -35,9 +43,7 @@ export default function HomeClient({
     const [infoCourse, setInfoCourse] = useState<string>(
         initialInfoCourse ?? initialSelectedCourse ?? ""
     );
-    const [searchQuery, setSearchQuery] = useState(
-        initialSearchQuery ?? ""
-    );
+    const [searchQuery, setSearchQuery] = useState(initialSearchQuery ?? "");
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
     useEffect(() => {
@@ -91,31 +97,50 @@ export default function HomeClient({
     const infoData = useMemo(() => {
         console.log(infoCourse);
         if (!infoCourse) return undefined;
-        return (graphData as Record<string, any>)[infoCourse] as
-            | Record<string, any>
-            | undefined;
+        return graphData[infoCourse];
     }, [infoCourse]);
 
-    const formatPrereq = useCallback((prereq: any): string => {
-        if (!prereq) return "None";
-        if (typeof prereq === "string") return prereq;
+    const getPrereqText = useCallback((prereq: Nodes | null): JSX.Element => {
+        if (!prereq) return <>None</>;
+        if (prereq.type == "COURSE") return <span>{prereq.course}</span>;
+        if (prereq.type == "PERMISSION") return <span>{prereq.raw}</span>;
+        if (prereq.type == "PLACEMENT") return <span>{prereq.name}</span>;
+        if (prereq.type == "SKILL") return <span>{prereq.name}</span>;
+        if (prereq.type == "STANDING") return <span>{prereq.standing}</span>;
         if (!Array.isArray(prereq.children) || prereq.children.length === 0) {
-            return "None";
+            return <></>;
         }
 
-        const parts = prereq.children
-            .map((child: any) => formatPrereq(child))
-            .filter((child: string) => Boolean(child));
+        const color = generateNonBlueColor();
 
-        if (parts.length === 0) return "None";
-        const joined = parts.join(` ${prereq.type} `);
-        return parts.length > 1 ? `(${joined})` : joined;
+        const parts = prereq.children.map((child: any) => getPrereqText(child));
+
+        if (parts.length === 0) return <></>;
+        return (
+            <>
+                <br></br>
+                <span style={{ color: color, fontWeight: 700 }}>(</span>
+                <span>{parts[0]}</span>
+                {parts.slice(1).map((el) => {
+                    if (React.Children.count(el) > 0) {
+                        return (
+                            <>
+                                {" "}
+                                <strong>{prereq.type}</strong> <span>{el}</span>
+                            </>
+                        );
+                    }
+                })}
+                <span style={{ color: color, fontWeight: 700 }}>)</span>
+                <br></br>
+            </>
+        );
     }, []);
 
     const prerequisitesText = useMemo(() => {
-        if (!infoCourse || !infoData) return "None";
-        return formatPrereq(infoData);
-    }, [formatPrereq, infoCourse, infoData]);
+        if (!infoData) return <>None</>;
+        return getPrereqText(infoData.prereq_tree);
+    }, [getPrereqText, infoCourse, infoData]);
 
     const infoLink = infoCourse
         ? `https://catalog.njit.edu/search/?search=${encodeURIComponent(
@@ -293,7 +318,7 @@ export default function HomeClient({
                     <div className="flex-1 p-4">
                         <div className="w-full h-full rounded-2xl overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-800">
                             <CourseGraph
-                                graphData={graphData as GraphData}
+                                graphData={graphData}
                                 selectedCourse={selectedCourse || undefined}
                                 infoCourse={infoCourse}
                                 visibleCourses={graphCourses}
@@ -309,7 +334,7 @@ export default function HomeClient({
                 {/* Course Sidebar */}
                 <aside className="w-80 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-100 dark:border-slate-700 shadow-xl absolute rounded-md shadow-xl ml-7 top-28">
                     <div className="p-2 pl-6 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
-                        {infoCourse ? (
+                        {infoCourse && infoData ? (
                             <>
                                 <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
                                     {infoCourse}
@@ -343,17 +368,23 @@ export default function HomeClient({
 
                     <div
                         className={`transition-all duration-300 ease-in-out overflow-scroll ${
-                            isSidebarOpen ? "max-h-96" : "overflow-hidden max-h-0"
+                            isSidebarOpen
+                                ? "max-h-96"
+                                : "overflow-hidden max-h-0"
                         }`}
                     >
                         <div className="p-6 pt-2 space-y-4">
                             <div className="text-sm text-slate-700 dark:text-slate-300">
                                 <span className="font-semibold text-slate-600 dark:text-slate-400">
+                                    Name:
+                                </span>{" "}
+                                {infoData && infoData.title}
+                            </div>
+                            <div className="text-sm text-slate-700 dark:text-slate-300">
+                                <span className="font-semibold text-slate-600 dark:text-slate-400">
                                     Description:
                                 </span>{" "}
-                                {infoCourse && (infoData as any)?.desc
-                                    ? (infoData as any).desc
-                                    : "no description"}
+                                {infoData && infoData.desc}
                             </div>
                             <div className="text-sm text-slate-700 dark:text-slate-300">
                                 <span className="font-semibold text-slate-600 dark:text-slate-400">

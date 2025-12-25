@@ -305,7 +305,7 @@
         }
     ],
     "AD 111": [
-        "COMM IN ART+ DES",
+        "COMM IN ART+ DES - TRAD MEDIA",
         {
             "002": [
                 "002",
@@ -400,7 +400,7 @@
         }
     ],
     "AD 112": [
-        "COMM IN ART & DES",
+        "COMM IN ART & DES-DIGTL MEDIA",
         {
             "002": [
                 "002",
@@ -1470,7 +1470,7 @@
         }
     ],
     "ARCH 310": [
-        "CO",
+        "CO-OP WORK EXPERIENCE I",
         {
             "002": [
                 "002",
@@ -1800,7 +1800,7 @@
         }
     ],
     "ARCH 410": [
-        "CO",
+        "CO-OP WORK EXPERIENCE II",
         {
             "002": [
                 "002",
@@ -2360,7 +2360,7 @@
         }
     ],
     "ARCH 510": [
-        "CO",
+        "CO-OP WORK EXPERIENCE III",
         {
             "002": [
                 "002",
@@ -3770,7 +3770,7 @@
         }
     ],
     "ARCH 680": [
-        "CO",
+        "CO-OP WORK EXPERIENCE I",
         {
             "001": [
                 "001",
@@ -3805,7 +3805,7 @@
         }
     ],
     "ARCH 681": [
-        "CO",
+        "CO-OP WORK EXPERIENCE II",
         {
             "001": [
                 "001",
@@ -3825,7 +3825,7 @@
         }
     ],
     "ARCH 682": [
-        "CO",
+        "CO-OP WORK EXPERIENCE III",
         {
             "001": [
                 "001",
@@ -4520,7 +4520,7 @@
         }
     ],
     "BDS 792B": [
-        "PRE",
+        "PRE-DOCTORAL RESEARCH",
         {
             "613": [
                 "613",
@@ -8635,7 +8635,7 @@
         }
     ],
     "BIOL 792B": [
-        "PRE",
+        "PRE-DOCTORAL RESEARCH",
         {
             "745": [
                 "745",
@@ -8865,7 +8865,7 @@
         }
     ],
     "BIOL 792C": [
-        "PRE",
+        "PRE-DOCTORAL RESEARCH",
         {
             "745": [
                 "745",
@@ -10905,7 +10905,7 @@
         }
     ],
     "BME 590": [
-        "GRADUATE CO",
+        "GRADUATE CO-OP WORK EXPER I",
         {
             "113": [
                 "113",
@@ -10925,7 +10925,7 @@
         }
     ],
     "BME 593": [
-        "GRADUATE CO",
+        "GRADUATE CO-OP WORK EXP IV",
         {
             "113": [
                 "113",
@@ -12525,7 +12525,7 @@
         }
     ],
     "BME 792": [
-        "PRE",
+        "PRE-DOCTORAL RESEARCH",
         {
             "061": [
                 "061",
@@ -14180,7 +14180,7 @@
         }
     ],
     "CE 491": [
-        "RESEARCH EXPER",
+        "RESEARCH EXPER-CIVIL ENGR",
         {
             "181": [
                 "181",
@@ -14795,7 +14795,7 @@
         }
     ],
     "CE 593": [
-        "GRADUATE CO",
+        "GRADUATE CO-OP WORK EXP IV",
         {
             "194": [
                 "194",
@@ -17775,7 +17775,7 @@
         }
     ],
     "CE 792": [
-        "PRE",
+        "PRE-DOCTORAL DISSERTATION",
         {
             "181": [
                 "181",
@@ -18460,7 +18460,7 @@
         }
     ],
     "CET 497": [
-        "CO",
+        "CO-OP INTERNSHIP",
         {
             "352": [
                 "352",
@@ -19805,7 +19805,7 @@
         }
     ],
     "CHE 590": [
-        "GRADUATE CO",
+        "GRADUATE CO-OP WORK EXPER I",
         {
             "084": [
                 "084",
@@ -19825,7 +19825,7 @@
         }
     ],
     "CHE 591": [
-        "GRADUATE CO",
+        "GRADUATE CO-OP WORK EXPER II",
         {
             "084": [
                 "084",
@@ -19845,7 +19845,7 @@
         }
     ],
     "CHE 592": [
-        "GRADUATE CO",
+        "GRADUATE CO-OP WORK EXPER III",
         {
             "084": [
                 "084",
@@ -19865,7 +19865,7 @@
         }
     ],
     "CHE 593": [
-        "GRADUATE CO",
+        "GRADUATE CO-OP WORK EXP IV",
         {
             "084": [
                 "084",
@@ -22650,7 +22650,7 @@
         }
     ],
     "CHE 792": [
-        "PRE",
+        "PRE-DOCTORAL RESEARCH",
         {
             "071": [
                 "071",
@@ -25055,7 +25055,7 @@
         }
     ],
     "CHEM 590": [
-        "GRADUATE CO",
+        "GRADUATE CO-OP WORK EXPER I",
         {
             "131": [
                 "131",
@@ -25330,7 +25330,7 @@
         }
     ],
     "CHEM 591": [
-        "GRADUATE CO",
+        "GRADUATE CO-OP WORK EXPER II",
         {
             "130": [
                 "130",
@@ -27245,7 +27245,7 @@
         }
     ],
     "CHEM 792B": [
-        "PRE",
+        "PRE-DOCTORAL RESEARCH",
         {
             "131": [
                 "131",
@@ -27720,7 +27720,7 @@
         }
     ],
     "CMT 436": [
-        "TEMP STRUCTURES",
+        "TEMP STRUCTURES-CONSTRUC",
         {
             "102": [
                 "102",
@@ -28615,7 +28615,7 @@
         }
     ],
     "COM 490": [
-        "CO",
+        "CO-OP WORK EXPERIENCE I",
         {
             "631": [
                 "631",
@@ -28635,7 +28635,7 @@
         }
     ],
     "COM 491": [
-        "CO",
+        "CO-OP WORK EXPERIENCE II",
         {
             "631": [
                 "631",
@@ -28655,7 +28655,7 @@
         }
     ],
     "COM 496": [
-        "SENIOR PROJECT",
+        "SENIOR PROJECT - COMM & MEDIA",
         {
             "631": [
                 "631",
@@ -30225,7 +30225,7 @@
         }
     ],
     "CS 435": [
-        "ADV DATA STRUCT",
+        "ADV DATA STRUCT-ALG DES",
         {
             "002": [
                 "002",
@@ -32740,7 +32740,7 @@
         }
     ],
     "CS 698": [
-        "ST: HUMAN",
+        "ST: HUMAN-ROBOT INTERACTION",
         {
             "002": [
                 "002",
@@ -36650,7 +36650,7 @@
         }
     ],
     "CS 792": [
-        "PRE",
+        "PRE-DOCTORAL RESEARCH",
         {
             "340": [
                 "340",
@@ -40335,7 +40335,7 @@
         }
     ],
     "DS 752": [
-        "HUMAN",
+        "HUMAN-AI SENSEMAKING",
         {
             "002": [
                 "002",
@@ -40715,7 +40715,7 @@
         }
     ],
     "DS 792B": [
-        "PRE",
+        "PRE-DOCTORAL RESEARCH",
         {
             "146": [
                 "146",
@@ -42675,7 +42675,7 @@
         }
     ],
     "ECE 593": [
-        "GRADUATE CO",
+        "GRADUATE CO-OP WORK EXP IV",
         {
             "251": [
                 "251",
@@ -43050,7 +43050,7 @@
         }
     ],
     "ECE 698": [
-        "ST: REINFORCEMENT LEARNING",
+        "ST: REINFORCEMENT LEARNING-BASED DECISION FOR ENGINEERS",
         {
             "002": [
                 "002",
@@ -46080,7 +46080,7 @@
         }
     ],
     "ECE 792B": [
-        "PRE",
+        "PRE-DOCTORAL RESEARCH",
         {
             "230": [
                 "230",
@@ -49545,7 +49545,7 @@
         }
     ],
     "ENE 792": [
-        "PRE",
+        "PRE-DOCTORAL RESEARCH",
         {
             "181": [
                 "181",
@@ -51440,7 +51440,7 @@
         }
     ],
     "ENGR 310": [
-        "CO",
+        "CO-OP WORK EXPERIENCE I",
         {
             "077": [
                 "077",
@@ -51645,7 +51645,7 @@
         }
     ],
     "ENGR 410": [
-        "CO",
+        "CO-OP WORK EXPERIENCE II",
         {
             "077": [
                 "077",
@@ -52185,7 +52185,7 @@
         }
     ],
     "ESC 690": [
-        "GRADUATE CO",
+        "GRADUATE CO-OP ENG. SC.",
         {
             "349": [
                 "349",
@@ -54775,7 +54775,7 @@
         }
     ],
     "EVSC 792B": [
-        "PRE",
+        "PRE-DOCTORAL RESEARCH",
         {
             "131": [
                 "131",
@@ -55050,7 +55050,7 @@
         }
     ],
     "FED 101": [
-        "NCE",
+        "NCE- FUNDAMENTALS OF ENGR DESIGN",
         {
             "002": [
                 "002",
@@ -55290,7 +55290,7 @@
         }
     ],
     "FIN 310": [
-        "DATA",
+        "DATA-DRIVEN FINANCIAL MODELING",
         {
             "002": [
                 "002",
@@ -55940,7 +55940,7 @@
         }
     ],
     "FRSC 490": [
-        "CO",
+        "CO-OP WORK EXPERIENCE",
         {
             "140": [
                 "140",
@@ -56255,7 +56255,7 @@
         }
     ],
     "FYS SEM": [
-        "FIRST",
+        "FIRST-YEAR SEMINAR",
         {
             "002": [
                 "002",
@@ -56480,7 +56480,7 @@
         }
     ],
     "HIST 213": [
-        "THE TWENTIETH",
+        "THE TWENTIETH-CENTURY WORLD",
         {
             "002": [
                 "002",
@@ -56610,7 +56610,7 @@
         }
     ],
     "HIST 310": [
-        "LTC CO",
+        "LTC CO-OP I",
         {
             "689": [
                 "689",
@@ -56630,7 +56630,7 @@
         }
     ],
     "HIST 311": [
-        "LTC CO",
+        "LTC CO-OP II",
         {
             "689": [
                 "689",
@@ -58605,7 +58605,7 @@
         }
     ],
     "IE 590": [
-        "GRAD CO",
+        "GRAD CO-OP WORK EXPERIENCE I",
         {
             "400": [
                 "400",
@@ -58625,7 +58625,7 @@
         }
     ],
     "IE 591": [
-        "GRAD CO",
+        "GRAD CO-OP WORK EXPERIENCE II",
         {
             "400": [
                 "400",
@@ -58645,7 +58645,7 @@
         }
     ],
     "IE 592": [
-        "GRAD CO",
+        "GRAD CO-OP WORK EXPERIENCE III",
         {
             "400": [
                 "400",
@@ -58665,7 +58665,7 @@
         }
     ],
     "IE 593": [
-        "GRADUATE CO",
+        "GRADUATE CO-OP WORK EXP IV",
         {
             "400": [
                 "400",
@@ -61180,7 +61180,7 @@
         }
     ],
     "IS 392": [
-        "AI",
+        "AI-DRIVEN TEXT ANALYTICS",
         {
             "452": [
                 "452",
@@ -61300,7 +61300,7 @@
         }
     ],
     "IS 480": [
-        "DATA",
+        "DATA-CENTRIC AI",
         {
             "002": [
                 "002",
@@ -62190,7 +62190,7 @@
         }
     ],
     "IS 591": [
-        "GRADUATE CO",
+        "GRADUATE CO-OP WORK EXPER II",
         {
             "510": [
                 "510",
@@ -65170,7 +65170,7 @@
         }
     ],
     "IS 792": [
-        "PRE",
+        "PRE-DOCTORAL RESEARCH",
         {
             "528": [
                 "528",
@@ -66365,7 +66365,7 @@
         }
     ],
     "IT 310": [
-        "E",
+        "E-COMMERCE TECHNOLOGY",
         {
             "002": [
                 "002",
@@ -70195,7 +70195,7 @@
         }
     ],
     "MATH 453": [
-        "HIGH",
+        "HIGH-PERF NUMERICAL COMPUTING",
         {
             "002": [
                 "002",
@@ -70375,7 +70375,7 @@
         }
     ],
     "MATH 590": [
-        "GRADUATE CO",
+        "GRADUATE CO-OP WORK EXPER I",
         {
             "719": [
                 "719",
@@ -70410,7 +70410,7 @@
         }
     ],
     "MATH 591": [
-        "GRADUATE CO",
+        "GRADUATE CO-OP WORK EXPER II",
         {
             "726": [
                 "726",
@@ -73365,7 +73365,7 @@
         }
     ],
     "ME 590": [
-        "GRAD CO",
+        "GRAD CO-OP WORK EXPERIENCE I",
         {
             "400": [
                 "400",
@@ -73385,7 +73385,7 @@
         }
     ],
     "ME 591": [
-        "GRAD CO",
+        "GRAD CO-OP WORK EXPERIENCE II",
         {
             "400": [
                 "400",
@@ -73405,7 +73405,7 @@
         }
     ],
     "ME 592": [
-        "GRAD CO",
+        "GRAD CO-OP WORK EXPERIENCE III",
         {
             "400": [
                 "400",
@@ -73425,7 +73425,7 @@
         }
     ],
     "ME 593": [
-        "GRADUATE CO",
+        "GRADUATE CO-OP WORK EXP IV",
         {
             "400": [
                 "400",
@@ -75665,7 +75665,7 @@
         }
     ],
     "ME 792B": [
-        "PRE",
+        "PRE-DOCTORAL RESEARCH",
         {
             "349": [
                 "349",
@@ -77085,7 +77085,7 @@
         }
     ],
     "MET 495": [
-        "CO",
+        "CO-OP WORK EXPERIENCE II",
         {
             "360": [
                 "360",
@@ -77335,7 +77335,7 @@
         }
     ],
     "MGMT 310": [
-        "CO",
+        "CO-OP WORK EXPERIENCE I",
         {
             "887": [
                 "887",
@@ -77670,7 +77670,7 @@
         }
     ],
     "MGMT 410": [
-        "CO",
+        "CO-OP WORK EXPERIENCE II",
         {
             "887": [
                 "887",
@@ -78720,7 +78720,7 @@
         }
     ],
     "MR UMD": [
-        "MAINTAINING REG",
+        "MAINTAINING REG-UMD DORM",
         {
             "002": [
                 "002",
@@ -82695,7 +82695,7 @@
         }
     ],
     "MTEN 792": [
-        "PRE",
+        "PRE-DOCTORAL RESEARCH",
         {
             "071": [
                 "071",
@@ -83265,7 +83265,7 @@
         }
     ],
     "MTSE 593": [
-        "GRADUATE CO",
+        "GRADUATE CO-OP WORK EXP IV",
         {
             "796": [
                 "796",
@@ -83985,7 +83985,7 @@
         }
     ],
     "MTSE 792B": [
-        "PRE",
+        "PRE-DOCTORAL RESEARCH",
         {
             "072": [
                 "072",
@@ -84275,7 +84275,7 @@
         }
     ],
     "OPSE 402": [
-        "OPT SCI & ENGR",
+        "OPT SCI & ENGR-APPLICATN",
         {
             "002": [
                 "002",
@@ -85290,7 +85290,7 @@
         }
     ],
     "PHEN 590": [
-        "GRADUATE CO",
+        "GRADUATE CO-OP WORK EXPER I",
         {
             "084": [
                 "084",
@@ -85310,7 +85310,7 @@
         }
     ],
     "PHEN 591": [
-        "GRADUATE CO",
+        "GRADUATE CO-OP WORK EXPER II",
         {
             "084": [
                 "084",
@@ -85330,7 +85330,7 @@
         }
     ],
     "PHEN 592": [
-        "GRADUATE CO",
+        "GRADUATE CO-OP WORK EXPER III",
         {
             "084": [
                 "084",
@@ -85350,7 +85350,7 @@
         }
     ],
     "PHEN 593": [
-        "GRADUATE CO",
+        "GRADUATE CO-OP WORK EXP IV",
         {
             "084": [
                 "084",
@@ -91405,7 +91405,7 @@
         }
     ],
     "PHYS 792": [
-        "PRE",
+        "PRE-DOCTORAL RESEARCH",
         {
             "500": [
                 "500",
@@ -92155,7 +92155,7 @@
         }
     ],
     "PSY 490": [
-        "CO",
+        "CO-OP WORK EXPERIENCE",
         {
             "669": [
                 "669",
@@ -92510,7 +92510,7 @@
         }
     ],
     "R014 396": [
-        "AFRO",
+        "AFRO-AMER COMMUNITY",
         {
             "001": [
                 "001",
@@ -92700,7 +92700,7 @@
         }
     ],
     "R070 352": [
-        "PEOPLE & CULT LAT",
+        "PEOPLE & CULT LAT-AM",
         {
             "0Q1": [
                 "0Q1",
@@ -93025,7 +93025,7 @@
         }
     ],
     "R085 103": [
-        "3",
+        "3-D DESIGN FUND",
         {
             "001": [
                 "001",
@@ -95190,7 +95190,7 @@
         }
     ],
     "R220 101": [
-        "INTRO TO ECONO",
+        "INTRO TO ECONO-MICRO",
         {
             "001": [
                 "001",
@@ -95270,7 +95270,7 @@
         }
     ],
     "R220 102": [
-        "INTRO TO ECON",
+        "INTRO TO ECON-MACRO",
         {
             "001": [
                 "001",
@@ -96055,7 +96055,7 @@
         }
     ],
     "R352 396": [
-        "AFRO",
+        "AFRO-AMERICAN LITERATURE",
         {
             "0Q1": [
                 "0Q1",
@@ -97495,7 +97495,7 @@
         }
     ],
     "R512 274": [
-        "HISTORY WOMEN US 1877",
+        "HISTORY WOMEN US 1877-PRESENT",
         {
             "001": [
                 "001",
@@ -97550,7 +97550,7 @@
         }
     ],
     "R512 368": [
-        "MODERN AMERICA:1890",
+        "MODERN AMERICA:1890-1940",
         {
             "001": [
                 "001",
@@ -98855,7 +98855,7 @@
         }
     ],
     "R790 311": [
-        "GOVT & POL OF LATIN",
+        "GOVT & POL OF LATIN-AM",
         {
             "060": [
                 "060",
@@ -100850,7 +100850,7 @@
         }
     ],
     "R940 331": [
-        "SPAN & SPAN",
+        "SPAN & SPAN-AMER LIT",
         {
             "0Q1": [
                 "0Q1",
@@ -101875,7 +101875,7 @@
         }
     ],
     "THTR 216": [
-        "IMPROVISATIONAL THTR",
+        "IMPROVISATIONAL THTR-SHORTFORM",
         {
             "002": [
                 "002",
@@ -102030,7 +102030,7 @@
         }
     ],
     "THTR 396": [
-        "INTERNSHIP",
+        "INTERNSHIP-THEATER",
         {
             "661": [
                 "661",
@@ -102585,7 +102585,7 @@
         }
     ],
     "TRAN 765": [
-        "MULTI",
+        "MULTI-MOD FREIGHT TRANS",
         {
             "852": [
                 "852",
@@ -102730,7 +102730,7 @@
         }
     ],
     "TRAN 792B": [
-        "PRE",
+        "PRE-DOCTORAL RESEARCH",
         {
             "202": [
                 "202",
@@ -104095,7 +104095,7 @@
         }
     ],
     "USYS 792": [
-        "PRE",
+        "PRE-DOCTORAL RESEARCH",
         {
             "002": [
                 "002",
@@ -104785,7 +104785,7 @@
         }
     ],
     "YWCC 590": [
-        "GRADUATE CO",
+        "GRADUATE CO-OP WORK EXPER I",
         {
             "510": [
                 "510",
@@ -104805,7 +104805,7 @@
         }
     ],
     "YWCC 591": [
-        "GRADUATE CO",
+        "GRADUATE CO-OP WORK EXPER II",
         {
             "510": [
                 "510",
@@ -104825,7 +104825,7 @@
         }
     ],
     "YWCC 592": [
-        "GRADUATE CO",
+        "GRADUATE CO-OP WORK EXPER III",
         {
             "510": [
                 "510",

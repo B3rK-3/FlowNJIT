@@ -33,8 +33,6 @@ def scrape_prereqs():
             if isinstance(item, str):
                 course_code = item
                 course_obj = {"course": course_code}
-                print("WRONG:", item)
-                continue
             elif isinstance(item, dict):
                 course_code = item.get("course", "")
                 course_obj = item
