@@ -1,3 +1,45 @@
+import graphDataRaw from "../graph.json";
+
+export const graphData = graphDataRaw as CourseStructure;
+
+export const terms = ["202610", "202595", "202590", "202550", "202510"];
+export const semesters = {
+    "10": "Spring",
+    "90": "Fall",
+    "95": "Winter",
+    "50": "Summer",
+};
+export const startTerm = "202610";
+
+export let sectionsData: Record<string, SectionEntries> = {};
+export let currentTermCourses: string[] = [];
+updateSectionsData(startTerm);
+
+
+export type SectionTuple = [
+    string, // 0: Section Number
+    string, // 1: CRN / Registration ID
+    string, // 2: Days (e.g., "MR")
+    string, // 3: Time Range
+    string, // 4: Location / Room
+    string, // 5: Status (e.g., "Open")
+    string, // 6: Capacity (string representation of number)
+    string, // 7: Enrolled (string representation of number)
+    string, // 8: Instructor Name
+    string, // 9: Instruction Mode (e.g., "Face-to-Face")
+    string, // 10: Credits
+    string, // 11: Textbook Info
+    string // 12: Comments / Extra Info
+];
+
+export interface SectionEntries {
+    [section: string]: SectionTuple;
+}
+
+export interface SectionInfo {
+    [termCodes: string]: SectionEntries;
+}
+
 /** 1) AND/OR node */
 export interface AndOrNode {
     type: "AND" | "OR";
@@ -123,6 +165,7 @@ export interface CourseInfo {
     desc: string;
     title: string;
     credits: number;
+    sections?: SectionInfo;
 }
 
 export interface CourseStructure {
@@ -142,9 +185,29 @@ export const generateRandomRGB = () => {
 };
 
 export const generateNonBlueColor = () => {
-  const r = getRandomInt(100, 255); // High Red
-  const g = getRandomInt(100, 255); // High Green
-  const b = getRandomInt(0, 80);    // Keep Blue very low
-  
-  return `rgb(${r}, ${g}, ${b})`;
+    const r = getRandomInt(100, 255); // High Red
+    const g = getRandomInt(100, 255); // High Green
+    const b = getRandomInt(0, 80); // Keep Blue very low
+
+    return `rgb(${r}, ${g}, ${b})`;
 };
+
+export function setCurrentTerm(term: string) {
+    updateSectionsData(term);
+}
+
+export function updateSectionsData(term: string) {
+    // Loop through each course in graphData
+    sectionsData = {};
+    currentTermCourses = [];
+    for (const [courseName, courseInfo] of Object.entries(graphData)) {
+        if (
+            "sections" in courseInfo &&
+            courseInfo.sections &&
+            term in courseInfo.sections
+        ) {
+            sectionsData[courseName] = courseInfo.sections[term];
+            currentTermCourses.push(courseName);
+        }
+    }
+}

@@ -2,9 +2,11 @@
 
 import React, { useState, useMemo, useCallback, useEffect, JSX } from "react";
 import dynamic from "next/dynamic";
-import graphDataRaw from "../../graph.json";
+
 import {
     CourseStructure,
+    currentTermCourses,
+    startTerm,
     generateNonBlueColor,
     generateRandomRGB,
     getRandomInt,
@@ -13,9 +15,11 @@ import {
 import { Span } from "next/dist/trace";
 import MainSidebar from "./MainSidebar";
 import CourseSidebar from "./CourseSidebar";
+import { graphData } from "../constants";
 
-const MAX_GRAPH_COURSES = 100;
-const graphData = graphDataRaw as CourseStructure;
+const MAX_GRAPH_COURSES = 40;
+
+
 // Dynamic import to avoid SSR issues with React Flow
 const CourseGraph = dynamic(() => import("./CourseGraph"), {
     ssr: false,
@@ -47,6 +51,10 @@ export default function HomeClient({
     );
     const [searchQuery, setSearchQuery] = useState(initialSearchQuery ?? "");
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [selectedTerm, setSelectedTerm] = useState(startTerm);
+    const [displayOnlyTermCourses, setDisplayOnlyTermCourses] =
+        useState(false);
+   
 
     useEffect(() => {
         setSelectedCourse(initialSelectedCourse ?? "");
@@ -54,7 +62,14 @@ export default function HomeClient({
         setSearchQuery(initialSearchQuery ?? "");
     }, [initialInfoCourse, initialSearchQuery, initialSelectedCourse]);
 
-    const courseList = useMemo(() => Object.keys(graphData).sort(), []);
+    
+
+    const courseList = useMemo(() => {
+        if (displayOnlyTermCourses) {
+            return [...currentTermCourses].sort();
+        }
+        return Object.keys(graphData).sort();
+    }, [displayOnlyTermCourses, selectedTerm]);
 
     const filteredCourses = useMemo(() => {
         if (!searchQuery) return courseList;
@@ -97,7 +112,6 @@ export default function HomeClient({
     }, [displayedCourses, selectedCourse]);
 
     const infoData = useMemo(() => {
-        console.log(currentCourse);
         if (!currentCourse) return undefined;
         return graphData[currentCourse];
     }, [currentCourse]);
@@ -126,7 +140,7 @@ export default function HomeClient({
                 {parts.slice(1).map((el) => {
                     if (React.Children.count(el) > 0) {
                         return (
-                            <span key={color}>
+                            <span key={getRandomInt(0, 9007199254740990)}>
                                 {" "}
                                 <strong>{prereq.type}</strong> <span>{el}</span>
                             </span>
@@ -162,6 +176,10 @@ export default function HomeClient({
                 selectedCourse={selectedCourse}
                 setSelectedCourse={setSelectedCourse}
                 setCurrentCourse={setCurrentCourse}
+                currentTerm={selectedTerm}
+                onTermChange={setSelectedTerm}
+                displayOnlyTermCourses={displayOnlyTermCourses}
+                setDisplayOnlyTermCourses={setDisplayOnlyTermCourses}
             />
 
             {/* Main Content */}
@@ -198,7 +216,7 @@ export default function HomeClient({
                             </div>
                             <div className="flex items-center gap-2">
                                 <span className="px-3 py-1 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 text-sm font-medium">
-                                    {Object.keys(graphData).length} classes
+                                    {Object.keys(graphData).length} courses
                                 </span>
                             </div>
                         </div>
@@ -228,6 +246,7 @@ export default function HomeClient({
                     setIsSidebarOpen={setIsSidebarOpen}
                     prerequisitesText={prerequisitesText}
                     infoLink={infoLink}
+                    currentTerm={selectedTerm}
                 />
             </main>
         </div>

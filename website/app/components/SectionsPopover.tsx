@@ -1,10 +1,12 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
-import sectionsData from "../../sections.json";
+import React, { useState, useRef, useEffect, useMemo } from "react";
+import { graphData, sectionsData } from "../constants";
 
 interface SectionsPopoverProps {
     courseName: string;
+    profLinks: Record<string, string>;
+    currentTerm: string;
 }
 
 interface SectionData {
@@ -23,8 +25,13 @@ interface SectionData {
     notes: string;
 }
 
-export default function SectionsPopover({ courseName }: SectionsPopoverProps) {
+export default function SectionsPopover({
+    courseName,
+    profLinks,
+    currentTerm,
+}: SectionsPopoverProps) {
     const [isOpen, setIsOpen] = useState(false);
+
     const popoverRef = useRef<HTMLDivElement>(null);
     const buttonRef = useRef<HTMLButtonElement>(null);
 
@@ -49,37 +56,17 @@ export default function SectionsPopover({ courseName }: SectionsPopoverProps) {
         }
     }, [isOpen]);
 
-    const courseData = (sectionsData as any)[courseName];
+    const courseSectionData = useMemo(() => {
+        return sectionsData[courseName];
+    }, [courseName, currentTerm]);
 
-    if (!courseData) {
-        return (
-            <button
-                disabled
-                className="p-1 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed"
-                title="No sections available"
-            >
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                >
-                    <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                    />
-                </svg>
-            </button>
-        );
-    }
+    const courseTitle = useMemo(() => {
+        return graphData[courseName]?.title || "Unknown Course";
+    }, [courseName]);
 
-    const courseTitle = courseData[0];
-    const sectionsObj = courseData[1] as Record<string, string[]>;
-    const sections: SectionData[] = Object.values(sectionsObj).map(
-        (sectionArray) => ({
+    const sections: SectionData[] = useMemo(() => {
+        if (!courseSectionData) return [];
+        return Object.values(courseSectionData).map((sectionArray) => ({
             section: sectionArray[0],
             code: sectionArray[1],
             days: sectionArray[2],
@@ -93,8 +80,76 @@ export default function SectionsPopover({ courseName }: SectionsPopoverProps) {
             credits: sectionArray[10],
             book: sectionArray[11],
             notes: sectionArray[12],
-        })
-    );
+        }));
+    }, [courseSectionData]);
+
+    if (!courseSectionData) {
+        return (
+            <div className="relative">
+                <button
+                    disabled
+                    className="p-1 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed"
+                    title="No sections available"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                        />
+                    </svg>
+                </button>
+            </div>
+        );
+    }
+
+    const getProfessorElement = (profName: string) => {
+        const link = profLinks[profName];
+        const notFoundUrl =
+            "https://www.ratemyprofessors.com/teacher-not-found";
+
+        if (link === notFoundUrl) {
+            return (
+                <span className="flex items-center gap-1 inline-flex">
+                    {profName}
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-4 w-4 text-red-500"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                    >
+                        <title>Professor not found in RateMyProfessors</title>
+                        <path
+                            fillRule="evenodd"
+                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                            clipRule="evenodd"
+                        />
+                    </svg>
+                </span>
+            );
+        }
+
+        if (link) {
+            return (
+                <a
+                    href={link}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-indigo-600 dark:text-indigo-400 hover:underline"
+                >
+                    {profName}
+                </a>
+            );
+        }
+        return <>{profName}</>;
+    };
 
     return (
         <div className="relative ">
@@ -133,7 +188,8 @@ export default function SectionsPopover({ courseName }: SectionsPopoverProps) {
                             {courseTitle}
                         </p>
                         <p className="text-xs text-slate-500 dark:text-slate-500 mt-1">
-                            {sections.length} section{sections.length !== 1 ? "s" : ""} available
+                            {sections.length} section
+                            {sections.length !== 1 ? "s" : ""} available
                         </p>
                     </div>
 
@@ -183,10 +239,32 @@ export default function SectionsPopover({ courseName }: SectionsPopoverProps) {
                                             {section.days}
                                         </td>
                                         <td className="px-3 py-2 text-slate-600 dark:text-slate-400 whitespace-nowrap">
-                                            {section.time}
+                                            {section.time.split(", ")[0]}
+                                            {section.time
+                                                .split(", ")
+                                                .splice(1)
+                                                .map((el, idx) => {
+                                                    return (
+                                                        <span key={idx}>
+                                                            <br></br>
+                                                            {el}
+                                                        </span>
+                                                    );
+                                                })}
                                         </td>
                                         <td className="px-3 py-2 text-slate-600 dark:text-slate-400">
-                                            {section.room}
+                                            {section.room.split(", ")[0]}
+                                            {section.room
+                                                .split(", ")
+                                                .splice(1)
+                                                .map((el, idx) => {
+                                                    return (
+                                                        <span key={idx}>
+                                                            <br></br>
+                                                            {el}
+                                                        </span>
+                                                    );
+                                                })}
                                         </td>
                                         <td className="px-3 py-2">
                                             <span
@@ -200,10 +278,13 @@ export default function SectionsPopover({ courseName }: SectionsPopoverProps) {
                                             </span>
                                         </td>
                                         <td className="px-3 py-2 text-slate-600 dark:text-slate-400">
-                                            {section.enrolled}/{section.capacity}
+                                            {section.enrolled}/
+                                            {section.capacity}
                                         </td>
                                         <td className="px-3 py-2 text-slate-600 dark:text-slate-400">
-                                            {section.instructor}
+                                            {getProfessorElement(
+                                                section.instructor
+                                            )}
                                         </td>
                                     </tr>
                                 ))}

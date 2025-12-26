@@ -4,3 +4,7 @@
 - find a way to display co-reqs
 
 - solidifiy plans on querying classes and prereqs
+
+
+DONE:
+- added rmp to teachers

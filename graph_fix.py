@@ -1,75 +1,86 @@
 import json
+import os
+import time
+import dotenv
+from google import genai
+from google.genai import types
+
+dotenv.load_dotenv()
+
+PROMPT_FILE = r"d:\Projects\NJIT_Course_FLOWCHART\prompt.txt"
 
 
-def section_info_into_graph(graph_path: str):
+def process_single_description(description):
     """
-    Merges section information (title and credits) from sections.json into graph.json
-    and outputs the result to n_graph.json.
+    Takes a single course description, queries the Gemini model using the prompt template,
+    and returns the parsed JSON output.
     """
-    graph = json.loads(open(graph_path).read())
-    sections = json.loads(open('sections.json').read())
+    api_key = os.getenv("GEMINI_API_KEY")
+    if not api_key:
+        print("Error: GEMINI_API_KEY environment variable is not set.")
+        return None
 
-    new_graph = {}
+    client = genai.Client(api_key=api_key)
 
-    for course_name, values in graph.items():
-        course_sections = sections[course_name]
-        course_title = course_sections[0]
+    if not os.path.exists(PROMPT_FILE):
+        print(f"File not found: {PROMPT_FILE}")
+        return None
 
+    with open(PROMPT_FILE, "r", encoding="utf-8") as f:
+        prompt_template = f.read()
+
+    final_prompt = prompt_template + "\n INPUT: " + description
+
+    try:
+        response = client.models.generate_content(
+            model="gemini-2.5-pro",
+            contents=final_prompt,
+            config=types.GenerateContentConfig(response_mime_type="application/json"),
+        )
+
+        # Parse JSON response
         try:
-            num_credits = float(course_sections[1][list(course_sections[1].keys())[0]][-3])
-        except Exception as e:
-            print(course_title)
-            exit
-        values['title'] = course_title
-        values['credits'] = num_credits
-        new_graph[course_name] = values
+            # Handle potential 'undefined' values from model output
+            clean_text = response.text.replace("undefined", "null")
+            parsed_json = json.loads(clean_text)
+            return parsed_json
+        except json.JSONDecodeError:
+            print(f"Error parsing JSON. Raw output: {response.text}")
+            return {
+                "error": "JSON Parse Error",
+                "raw_response": response.text,
+            }
 
-    json.dump(new_graph, open('n_graph.json', 'w'))
-
-
-def fix_parse_errors(graph_path: str):
-    graph_str = open(graph_path, 'r', encoding='utf-8').read()
-    graph: dict[str, dict] = json.loads(graph_str)
-    
-    for key, value in graph.items():
-        if 'error' in value.keys():
-            if value['error'] == "JSON Parse Error":
-                response = value['raw_response'].replace('undefined', 'null')
-                response = json.loads(response)
-                graph[key] = response 
-            else:
-                print(value['error'])
-    open(graph_path, 'w').write(json.dumps(graph))
-
-
-def add_missing_descriptions(graph_path: str, courses_path: str = 'data/njit_courses_flat.json'):
-    """
-    Fills in missing 'desc' fields in graph.json by looking them up from njit_courses.json.
-    Saves the updated graph back to the same file.
-    """
-    graph = json.loads(open(graph_path, 'r', encoding='utf-8').read())
-    courses = json.loads(open(courses_path, 'r', encoding='utf-8').read())
-    
-    for course_name, course_data in graph.items():
-        if 'desc' not in course_data or course_data['desc'] is None:
-            # Try to find the course in njit_courses.json
-            if course_name in courses:
-                course_desc = courses[course_name].get('desc', None)
-                if course_desc:
-                    graph[course_name]['desc'] = course_desc
-                    print(f"Added description for {course_name}")
-                else:
-                    graph[course_name]['desc'] = "No Description"
-                    print(f"No description found for {course_name} in courses data")
-            else:
-                print(f"Course {course_name} not found in courses data")
-    
-    open(graph_path, 'w', encoding='utf-8').write(json.dumps(graph))
-    print(f"Updated {graph_path} with missing descriptions")
+    except Exception as e:
+        print(f"API Error: {e}")
+        return {}
 
 
 if __name__ == "__main__":
-    add_missing_descriptions('graph.json')
-    # fix_parse_errors('gemini_2_5_pro.json')
-    # section_info_into_graph('gemini_2_5_pro.json')
-    
+    # Existing analysis code
+    if os.path.exists("graph.json"):
+        with open("graph.json", "r") as f:
+            graph = json.load(f)
+
+        courses_without_prereq = [
+            course_id for course_id, data in graph.items() if "prereq_tree" not in data
+        ]
+
+        for course_id in courses_without_prereq:
+            print(course_id)
+            course_return = {
+                "prereq_tree": None,
+                "coreq_tree": None,
+                "restrictions": [],
+            }
+            if graph[course_id]["desc"] not in ("", "No Description"):
+                course_return = process_single_description(graph[course_id]["desc"])
+            graph[course_id].update(course_return)
+            print(graph[course_id])
+
+        with open("graph.json", "w") as f:
+            f.write(json.dumps(graph))
+
+        print(f"Courses without prereq tree: {len(courses_without_prereq)}")
+    else:
+        print("graph.json not found in current directory.")

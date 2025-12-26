@@ -1,7 +1,8 @@
 "use client";
 
-import React, { JSX } from "react";
+import React, { JSX, useEffect, useState } from "react";
 import SectionsPopover from "./SectionsPopover";
+import { sectionsData } from "../constants";
 
 interface CourseSidebarProps {
     currentCourse: string;
@@ -14,6 +15,7 @@ interface CourseSidebarProps {
     setIsSidebarOpen: (open: boolean) => void;
     prerequisitesText: JSX.Element;
     infoLink: string;
+    currentTerm: string;
 }
 
 export default function CourseSidebar({
@@ -23,7 +25,55 @@ export default function CourseSidebar({
     setIsSidebarOpen,
     prerequisitesText,
     infoLink,
+    currentTerm,
 }: CourseSidebarProps) {
+    const [profLinks, setProfLinks] = useState<Record<string, string>>({});
+    // Fetch professor links when popover opens
+    useEffect(() => {
+        const fetchProfessorLinks = async () => {
+            if (!currentCourse) return;
+            const courseData = sectionsData[currentCourse];
+            if (!courseData) return;
+
+            const instructors = new Set(
+                Object.values(courseData).map((section) => section[8])
+            );
+
+            const links: Record<string, string> = {};
+
+            for (const instructor of instructors) {
+                try {
+                    const [profLastName, profFirstName] =
+                        instructor.split(", ");
+                    const response = await fetch(
+                        `https://backend-server-black-phi.vercel.app/prof?q=${profFirstName} ${profLastName}&getData=false`
+                    );
+
+                    if (!response.ok || response.status == 204) {
+                        links[instructor] =
+                            "https://www.ratemyprofessors.com/teacher-not-found";
+                        continue;
+                    }
+
+                    const responseJson = await response.json();
+                    links[instructor] =
+                        responseJson.link ||
+                        "https://www.ratemyprofessors.com/teacher-not-found";
+                } catch (error) {
+                    console.error(
+                        `Failed to fetch professor data for ${instructor}:`,
+                        error
+                    );
+                    links[instructor] =
+                        "https://www.ratemyprofessors.com/teacher-not-found";
+                }
+            }
+
+            setProfLinks(links);
+        };
+
+        fetchProfessorLinks();
+    }, [currentCourse, currentTerm]);
     return (
         <aside className="w-80 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-100 dark:border-slate-700 shadow-xl absolute rounded-md shadow-xl ml-7 top-28">
             <div className="p-2 pl-6 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
@@ -40,7 +90,11 @@ export default function CourseSidebar({
                 )}
                 <div className="flex items-center gap-1">
                     {currentCourse && (
-                        <SectionsPopover courseName={currentCourse} />
+                        <SectionsPopover
+                            courseName={currentCourse}
+                            profLinks={profLinks}
+                            currentTerm={currentTerm}
+                        />
                     )}
                     <button
                         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -96,14 +150,14 @@ export default function CourseSidebar({
                                 {currentCourse} -&gt;
                             </a>
                         ) : (
-                            "no link"
+                            ""
                         )}
                     </div>
                     <div className="text-sm text-slate-700 dark:text-slate-300">
                         <span className="font-semibold text-slate-600 dark:text-slate-400">
                             Prerequisites:
                         </span>{" "}
-                        {currentCourse ? prerequisitesText : "None"}
+                        {currentCourse ? prerequisitesText : ""}
                     </div>
                 </div>
             </div>
