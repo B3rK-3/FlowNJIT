@@ -6,5 +6,3 @@
 - solidifiy plans on querying classes and prereqs
 
 
-DONE:
-- added rmp to teachers

@@ -459,7 +459,7 @@ def scrape_undergrad_grad_catalog(url: str) -> None:
 
 def main():
     global all_courses
-    all_courses = json.load(open(r"d:\Projects\NJIT_Course_FLOWCHART\graph.json", "r"))
+    all_courses = json.load(open(r"d:\Projects\NJIT_Course_FLOWCHART\website\graph.json", "r"))
 
     """Scrape all links and save to JSON"""
     parser = argparse.ArgumentParser(
@@ -479,7 +479,7 @@ def main():
     parser.add_argument(
         "--output",
         type=str,
-        default=r"d:\Projects\NJIT_Course_FLOWCHART\graph.json",
+        default=r"d:\Projects\NJIT_Course_FLOWCHART\website\graph.json",
         help="Path to the output JSON file.",
     )
     parser.add_argument(
