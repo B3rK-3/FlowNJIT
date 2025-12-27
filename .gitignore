@@ -41,7 +41,10 @@ yarn-error.log*
 next-env.d.ts
 chroma
 *.db
+*.sqlite*
 website/node_modules
 website/.next
 website/out
-*.json  
+data/
+*chromadb*
+*__pycache__*

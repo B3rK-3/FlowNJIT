@@ -85,6 +85,7 @@ export interface PermissionNode {
 
 export type PermissionKind =
     | "INSTRUCTOR_APPROVAL"
+    | "ADVISOR_APPROVAL"
     | "DEPARTMENT_APPROVAL"
     | "SCHOOL_APPROVAL"
     | "PROGRAM_APPROVAL"
@@ -156,6 +157,7 @@ export type RestrictionKind =
     | "CROSS_LISTED"
     | "TIME_CONFLICT_RULE"
     | "PRIOR_CREDIT_EXCLUSION"
+    | "PROGRAM_APPROVAL"
     | "OTHER";
 
 export interface CourseInfo {
