@@ -5,7 +5,7 @@ import {
     setCookie,
 } from "cookies-next";
 import graphDataRaw from "../graph.json";
-import { randomUUID } from "crypto";
+import { v4 as uuidv4 } from 'uuid';
 
 export const graphData = graphDataRaw as unknown as CourseStructure;
 let sessionUUID: string = "";
@@ -224,18 +224,16 @@ export function updateSectionsData(term: string) {
 
 export async function getSessionUUID(): Promise<string | undefined> {
     const cookieUUIDkey = "uuidv4";
-    if (sessionUUID) {
-        return sessionUUID;
-    }
-    if (!hasCookie(cookieUUIDkey)) {
-        sessionUUID = randomUUID();
-        await setCookie(cookieUUIDkey, sessionUUID, { maxAge: 9999 });
-        return sessionUUID;
+    if (sessionUUID) return sessionUUID;
+    
+    const UUID = (await getCookie(cookieUUIDkey))
+    
+    if (UUID) {
+        sessionUUID = UUID;
     } else {
-        const UUID = (await getCookie(cookieUUIDkey));
-        if (UUID) {
-            sessionUUID = UUID;
-        }
-        return sessionUUID;
+        sessionUUID = uuidv4();
+        setCookie(cookieUUIDkey, sessionUUID, { maxAge: 9999 });
     }
+    
+    return sessionUUID;
 }

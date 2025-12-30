@@ -4,8 +4,8 @@ import React, { useState } from "react";
 import { MessageCircle, X, Send } from "lucide-react";
 import { currentTerm, getSessionUUID } from "../constants";
 
-export default async function ChatPopup() {
-    const sessionUUID = await getSessionUUID();
+export default function ChatPopup() {
+    const sessionUUIDPromise = getSessionUUID();
     const errorMessage = "Something went wrong! Try again later!";
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState<
@@ -30,43 +30,45 @@ export default async function ChatPopup() {
             setMessages([...messages, newMessage]);
             setIsLoading(true);
 
-            fetch("https://flownjit.com/chat", {
-                method: "POST",
-                body: JSON.stringify({
-                    sessionID: sessionUUID,
-                    term: currentTerm,
-                    query: inputValue,
-                }),
-            })
-                .then((response) => {
-                    if (response.ok) {
-                        return response.text();
-                    } else {
-                        return errorMessage;
-                    }
+            sessionUUIDPromise.then((sessionUUID) => {
+                fetch("https://flownjit.com/chat", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        sessionID: sessionUUID,
+                        term: currentTerm,
+                        query: inputValue,
+                    }),
                 })
-                .then((aiResponse) => {
-                    setMessages((prevMessages) => [
-                        ...prevMessages,
-                        {
-                            id: Date.now(),
-                            text: aiResponse,
-                            sender: "bot",
-                        },
-                    ]);
-                    setIsLoading(false);
-                })
-                .catch((e) => {
-                    setMessages((prevMessages) => [
-                        ...prevMessages,
-                        {
-                            id: Date.now(),
-                            text: errorMessage,
-                            sender: "bot",
-                        },
-                    ]);
-                    setIsLoading(false);
-                });
+                    .then((response) => {
+                        if (response.ok) {
+                            return response.text();
+                        } else {
+                            return errorMessage;
+                        }
+                    })
+                    .then((aiResponse) => {
+                        setMessages((prevMessages) => [
+                            ...prevMessages,
+                            {
+                                id: Date.now(),
+                                text: aiResponse,
+                                sender: "bot",
+                            },
+                        ]);
+                        setIsLoading(false);
+                    })
+                    .catch((e) => {
+                        setMessages((prevMessages) => [
+                            ...prevMessages,
+                            {
+                                id: Date.now(),
+                                text: errorMessage,
+                                sender: "bot",
+                            },
+                        ]);
+                        setIsLoading(false);
+                    });
+            });
 
             setInputValue("");
         }

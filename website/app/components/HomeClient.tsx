@@ -6,7 +6,7 @@ import dynamic from "next/dynamic";
 import {
     CourseStructure,
     currentTermCourses,
-    startTerm,
+    currentTerm,
     generateNonBlueColor,
     generateRandomRGB,
     getRandomInt,
@@ -52,7 +52,7 @@ export default function HomeClient({
     );
     const [searchQuery, setSearchQuery] = useState(initialSearchQuery ?? "");
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-    const [selectedTerm, setSelectedTerm] = useState(startTerm);
+    const [selectedTerm, setSelectedTerm] = useState(currentTerm);
     const [displayOnlyTermCourses, setDisplayOnlyTermCourses] =
         useState(false);
    
