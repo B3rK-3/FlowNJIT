@@ -44,7 +44,7 @@ export default function ChatPopup() {
                 })
                     .then((response) => {
                         if (response.ok) {
-                            return response.text();
+                            return response.json();
                         } else {
                             return errorMessage;
                         }
@@ -54,7 +54,7 @@ export default function ChatPopup() {
                             ...prevMessages,
                             {
                                 id: Date.now(),
-                                text: aiResponse,
+                                text: aiResponse.response,
                                 sender: "bot",
                             },
                         ]);
@@ -143,7 +143,9 @@ export default function ChatPopup() {
                                         : "bg-white dark:bg-slate-700 text-slate-900 dark:text-white rounded-bl-none border border-slate-200 dark:border-slate-600"
                                 }`}
                             >
-                                <p className="text-sm">{message.text}</p>
+                                <p className="text-sm whitespace-pre-wrap break-words">
+                                    {message.text.replace(/\\n/g, "\n").replace(/\\t/g, "\t")}
+                                </p>
                             </div>
                         </div>
                     ))}
