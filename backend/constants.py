@@ -7,7 +7,6 @@ import redis
 import contextvars
 
 
-
 dotenv.load_dotenv("./.env")
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
@@ -17,8 +16,7 @@ CHROMA_DB = os.getenv("CHROMA_DB")
 # paths
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_FILE = os.path.join(BASE_DIR, "../data/graph.json")
-REDIS = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
-
+REDIS = redis.Redis(host="localhost", port=6379, db=0, decode_responses=True)
 
 
 # section entries
@@ -26,6 +24,8 @@ SectionEntries = Tuple[str, str, str, str, str, str, str, str, str, str, str, st
 SectionInfo = Dict[str, SectionEntries]
 
 TERMS = Literal["202610", "202595", "202590", "202550", "202510"]
+STANDINGS = ["FRESHMAN", "SOPHOMORE", "JUNIOR", "SENIOR", "GRAD"]
+StandingsLiteral = Literal["FRESHMAN", "SOPHOMORE", "JUNIOR", "SENIOR", "GRAD"]
 
 SEMESTERS = {
     "10": "Spring",
@@ -138,15 +138,20 @@ class StandingNodeModel(BaseModel):
     model_config = ConfigDict(extra="forbid")
     type: Literal["STANDING"]
     standing: str
-    normalized: Optional[
-        Literal["FRESHMAN", "SOPHOMORE", "JUNIOR", "SENIOR", "GRAD"]
-    ] = None
+    normalized: StandingsLiteral
+    semesters_left: Optional[int] = None
 
 
 class SkillNodeModel(BaseModel):
     model_config = ConfigDict(extra="forbid")
     type: Literal["SKILL"]
     name: str
+
+
+class EquivalentNodeModel(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    type: Literal["EQUIVALENT"]
+    courses: List[str]
 
 
 NodesModel = Annotated[
@@ -157,6 +162,7 @@ NodesModel = Annotated[
         PermissionNodeModel,
         StandingNodeModel,
         SkillNodeModel,
+        EquivalentNodeModel,
     ],
     Field(discriminator="type"),  # <--- Critical for Gemini to pick the right one
 ]
@@ -193,16 +199,37 @@ class CourseMetadata(BaseModel):
 
 
 class CourseQueryFormat(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-    query: str
-    top_n: int = 20
-    only_prereqs_fulfilled: bool = True
+    model_config = {"extra": "forbid"}
+
+    query: str = Field(
+        description="Natural language description of the course(s) the user is searching for."
+    )
+
+    top_n: int = Field(
+        default=20,
+        ge=1,
+        le=100,
+        description="Maximum number of courses to return, ordered by relevance.",
+    )
+
+    only_prereqs_fulfilled: bool = Field(
+        default=True,
+        description=(
+            "If true, return only courses for which the user satisfies all prerequisites. "
+            "If false, return all relevant courses regardless of prerequisites."
+        ),
+    )
 
 
 class UserCourseInfo(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    name: str
-    grade: PermittedGrades = "C"
+    name: str = Field(
+        description="Name of the course. If course is not valid, will return an error.",
+    )
+    grade: PermittedGrades = Field(
+        default="C",
+        description="Grade recieved in course. A pass is a 'C'. Example: 'I passed a class', then grade = 'C'.",
+    )
 
 
 UserCourses = Dict[str, UserCourseInfo]
@@ -210,13 +237,33 @@ UserCourses = Dict[str, UserCourseInfo]
 
 class UserFulfilled(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    courses: UserCourses
+    courses: UserCourses = {}
+    equivalents: List[str] = []
+    standing: Optional[StandingsLiteral] = None
+    semesters_left: Optional[int] = None
 
 
 class AddUserPrereqsFormat(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    courses: List[UserCourseInfo]
+    courses: List[UserCourseInfo] = Field(
+        default_factory=list,
+        description="List of completed or in-progress courses the user has taken.",
+    )
+    equivalents: List[str] = Field(
+        default_factory=list,
+        description="List of courses that the user has equivalents for. Example: (equivalents for CS 350).",
+    )
+    standing: Optional[StandingsLiteral] = Field(
+        default=None,
+        description="User's academic standing (FRESHMAN, SOPHOMORE, JUNIOR, SENIOR, GRAD).",
+    )
+    semesters_left: Optional[int] = Field(
+        default=None, description="Number of semesters remaining until graduation."
+    )
 
+class CourseSearchFormat(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    course_name: str
 
 class RPCRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
@@ -258,5 +305,8 @@ except ValidationError as e:
 sections_data: Dict[str, SectionEntries] = {}
 current_term_courses: Set[str] = set()
 CHAT_N = 5
-current_session_id = contextvars.ContextVar('current_session_id', default=None)
-current_session_prereqs = contextvars.ContextVar[UserFulfilled]('current_session_prereqs', default=UserFulfilled(courses={}))
+current_session_id = contextvars.ContextVar("current_session_id", default=None)
+current_session_prereqs = contextvars.ContextVar[UserFulfilled](
+    "current_session_prereqs", default=UserFulfilled()
+)
+VALID_COURSES = set(graph_data.keys())

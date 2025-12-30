@@ -9,14 +9,12 @@ from constants import GEMINI_API_KEY, current_session_id
 app = FastAPI()
 initialize_database()
 
+
 @app.post("/chat", response_model=ChatResponse)
 async def chat_endpoint(request: ChatRequest):
-    
     current_session_id.set(request.sessionID)
     response = gemini_call(request.query)
     return {"response": response}
-
-    
 
 
 if __name__ == "__main__":
