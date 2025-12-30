@@ -2,38 +2,71 @@
 
 import React, { useState } from "react";
 import { MessageCircle, X, Send } from "lucide-react";
+import { currentTerm, getSessionUUID } from "../constants";
 
-export default function ChatPopup() {
+export default async function ChatPopup() {
+    const sessionUUID = await getSessionUUID();
+    const errorMessage = "Something went wrong! Try again later!";
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState<
         { id: number; text: string; sender: "user" | "bot" }[]
     >([
         {
             id: 1,
-            text: "Hello! How can I help you with course prerequisites?",
+            text: "Hello! How can I help you?",
             sender: "bot",
         },
     ]);
     const [inputValue, setInputValue] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleSendMessage = () => {
         if (inputValue.trim()) {
             const newMessage = {
-                id: messages.length + 1,
+                id: Date.now(),
                 text: inputValue,
                 sender: "user" as const,
             };
             setMessages([...messages, newMessage]);
+            setIsLoading(true);
 
-            // Simulate bot response
-            setTimeout(() => {
-                const botResponse = {
-                    id: messages.length + 2,
-                    text: "Thanks for your message! I'm here to help.",
-                    sender: "bot" as const,
-                };
-                setMessages((prev) => [...prev, botResponse]);
-            }, 500);
+            fetch("https://flownjit.com/chat", {
+                method: "POST",
+                body: JSON.stringify({
+                    sessionID: sessionUUID,
+                    term: currentTerm,
+                    query: inputValue,
+                }),
+            })
+                .then((response) => {
+                    if (response.ok) {
+                        return response.text();
+                    } else {
+                        return errorMessage;
+                    }
+                })
+                .then((aiResponse) => {
+                    setMessages((prevMessages) => [
+                        ...prevMessages,
+                        {
+                            id: Date.now(),
+                            text: aiResponse,
+                            sender: "bot",
+                        },
+                    ]);
+                    setIsLoading(false);
+                })
+                .catch((e) => {
+                    setMessages((prevMessages) => [
+                        ...prevMessages,
+                        {
+                            id: Date.now(),
+                            text: errorMessage,
+                            sender: "bot",
+                        },
+                    ]);
+                    setIsLoading(false);
+                });
 
             setInputValue("");
         }
@@ -60,7 +93,9 @@ export default function ChatPopup() {
                 <div className="bg-gradient-to-r from-indigo-600 to-indigo-700 px-4 py-3 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <MessageCircle className="w-5 h-5 text-white" />
-                        <h3 className="font-semibold text-white">Course Chat</h3>
+                        <h3 className="font-semibold text-white">
+                            Course Chat
+                        </h3>
                     </div>
                     <button
                         onClick={() => setIsOpen(false)}
@@ -72,6 +107,21 @@ export default function ChatPopup() {
 
                 {/* Messages Container */}
                 <div className="h-80 overflow-y-auto flex flex-col gap-3 p-4 bg-slate-50 dark:bg-slate-800">
+                    <style>{`
+                        @keyframes typing {
+                            0%, 60%, 100% { opacity: 0.5; }
+                            30% { opacity: 1; }
+                        }
+                        .typing-dot {
+                            animation: typing 1.4s infinite;
+                        }
+                        .typing-dot:nth-child(2) {
+                            animation-delay: 0.2s;
+                        }
+                        .typing-dot:nth-child(3) {
+                            animation-delay: 0.4s;
+                        }
+                    `}</style>
                     {messages.map((message) => (
                         <div
                             key={message.id}
@@ -92,6 +142,15 @@ export default function ChatPopup() {
                             </div>
                         </div>
                     ))}
+                    {isLoading && (
+                        <div className="flex justify-start">
+                            <div className="bg-white dark:bg-slate-700 text-slate-900 dark:text-white rounded-bl-none border border-slate-200 dark:border-slate-600 px-4 py-2 rounded-lg flex gap-1 items-center">
+                                <span className="typing-dot inline-block w-2 h-2 rounded-full bg-slate-400 dark:bg-slate-500"></span>
+                                <span className="typing-dot inline-block w-2 h-2 rounded-full bg-slate-400 dark:bg-slate-500"></span>
+                                <span className="typing-dot inline-block w-2 h-2 rounded-full bg-slate-400 dark:bg-slate-500"></span>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* Input Area */}

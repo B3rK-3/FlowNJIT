@@ -8,7 +8,7 @@ import graphDataRaw from "../graph.json";
 import { randomUUID } from "crypto";
 
 export const graphData = graphDataRaw as unknown as CourseStructure;
-const sessionUUID = await getSessionUUID()
+let sessionUUID: string = "";
 
 export const terms = ["202610", "202595", "202590", "202550", "202510"];
 export const semesters = {
@@ -17,11 +17,11 @@ export const semesters = {
     "95": "Winter",
     "50": "Summer",
 };
-export const startTerm = "202610";
+export let currentTerm = "202610";
 
 export let sectionsData: Record<string, SectionEntries> = {};
 export let currentTermCourses = new Set<string>();
-updateSectionsData(startTerm);
+updateSectionsData(currentTerm);
 
 export type SectionTuple = [
     string, // 0: Section Number
@@ -202,6 +202,7 @@ export const generateNonBlueColor = () => {
 };
 
 export function setCurrentTerm(term: string) {
+    currentTerm = term;
     updateSectionsData(term);
 }
 
@@ -223,12 +224,18 @@ export function updateSectionsData(term: string) {
 
 export async function getSessionUUID(): Promise<string | undefined> {
     const cookieUUIDkey = "uuidv4";
-
+    if (sessionUUID) {
+        return sessionUUID;
+    }
     if (!hasCookie(cookieUUIDkey)) {
-        const userUUID = randomUUID();
-        await setCookie(cookieUUIDkey, userUUID, { maxAge: 9999 });
-        return userUUID;
+        sessionUUID = randomUUID();
+        await setCookie(cookieUUIDkey, sessionUUID, { maxAge: 9999 });
+        return sessionUUID;
     } else {
-        return await getCookie(cookieUUIDkey);
+        const UUID = (await getCookie(cookieUUIDkey));
+        if (UUID) {
+            sessionUUID = UUID;
+        }
+        return sessionUUID;
     }
 }

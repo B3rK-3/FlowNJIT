@@ -31,8 +31,7 @@ import json
 
 # use cuda
 ef = embedding_functions.SentenceTransformerEmbeddingFunction(
-    model_name="all-MiniLM-L6-v2",
-    device="cuda",
+    model_name="all-MiniLM-L6-v2"
 )
 
 # global cross encoder
