@@ -35,7 +35,7 @@ ef = embedding_functions.SentenceTransformerEmbeddingFunction(
 )
 
 # global cross encoder
-cross_encoder = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2", device="cuda")
+cross_encoder = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2", device="cpu")
 
 # global chromadb client
 chroma_client = chromadb.PersistentClient(path="./chromadb")
