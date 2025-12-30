@@ -33,6 +33,9 @@ export default function ChatPopup() {
             sessionUUIDPromise.then((sessionUUID) => {
                 fetch("https://flownjit.com/chat", {
                     method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
                     body: JSON.stringify({
                         sessionID: sessionUUID,
                         term: currentTerm,
