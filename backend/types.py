@@ -9,7 +9,7 @@ PermittedGrades = Literal["A", "B+", "B", "C+", "C", "C-", "F"]
 StandingsLiteral = Literal["FRESHMAN", "SOPHOMORE", "JUNIOR", "SENIOR", "GRAD"]
 # SectionsEntries = [Section,CRN,Days [Monday-M, Tuesday-T, Wednesday-W, Thursday-R, Friday-F]+,Times,Location,Status,	Max,Now,Instructor,Delivery Mode,Credits,Info,Comments]
 
-SectionEntries = Tuple[str, str, str, str, str, str, str, str, str, str, str, str, str]
+SectionEntries = List[str]
 SectionInfo = Dict[str, SectionEntries]
 
 
@@ -152,14 +152,15 @@ class RestrictionModel(BaseModel):
 
 class CourseInfoModel(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    # fixed: added defaults for all trees and optional data
-    prereq_tree: Optional[AndOrNodeModel]
-    coreq_tree: Optional[AndOrNodeModel]
-    restrictions: List[RestrictionModel]
-    desc: str
-    title: str
+    prereq_tree: Optional[AndOrNodeModel] = None
+    coreq_tree: Optional[AndOrNodeModel] = None
+    restrictions: List[RestrictionModel] = []
+    desc: str = ""
+    title: str = ""
     credits: Optional[Union[float, None]] = None
-    sections: Dict[str, SectionInfo]
+    sections: Dict[str, SectionInfo] = {}
+    error: Optional[str] = None
+    rawResponse: Optional[str] = None
 
 
 CourseDataType = Dict[str, CourseInfoModel]
@@ -174,13 +175,14 @@ class CourseStructureModel(RootModel[CourseDataType]):
 
 #### ---- TYPES - BEGIN ---- ####
 class LecturerRating(BaseModel):
-    model_config = ConfigDict(extra="allow")
+    model_config = ConfigDict(extra="forbid")
     avgRating: str
     wouldTakeAgainPercent: str
     avgDifficulty: str
     link: str
     numRatings: str
     legacyId: int
+    lastUpdated: float = Field(default=None)
 
 
 LecturerRatingType = Dict[str, LecturerRating]

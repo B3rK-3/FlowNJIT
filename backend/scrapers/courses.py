@@ -19,6 +19,7 @@ from backend.scrapers.constants import (
     CourseStructureModel,
 )
 from backend.constants import COURSE_DATA_FILE
+from backend.types import CourseInfoModel
 
 dotenv.load_dotenv()
 
@@ -38,17 +39,18 @@ links = [
 semesters = {"10": "Spring", "95": "Winter", "90": "Fall", "50": "Summer"}
 
 
-def get_individual_course(course_code: str) -> Dict[str, Any]:
+def get_course_title_desc(course_code: str) -> Dict[str, Any]:
     url = f"https://catalog.njit.edu/search/?P={course_code}"
-    course_obj = {"desc": "No Description", "title": "Unkown"}
+    course_obj = {"desc": ""}
     try:
         response = requests.get(url, timeout=5)
         if response.status_code == 200:
             soup = BeautifulSoup(response.text, "html.parser")
             target_header = soup.find("div", class_="search-courseresult")
-            title_ele = target_header.find("h2").get_text(strip=True)
+            """title_ele = target_header.find("h2").get_text(strip=True)
             title = title_ele.split(".")[1].strip()
-            course_obj["title"] = title
+            if title:
+                course_obj["title"] = title"""
 
             # Find a <p> field with 'Prerequisites:'
             target_p = soup.find("p", class_="courseblockdesc")
@@ -56,30 +58,47 @@ def get_individual_course(course_code: str) -> Dict[str, Any]:
                 full_text = target_p.get_text().strip()
                 course_obj["desc"] = full_text
             else:
-                course_obj["desc"] = "No Description"
+                course_obj["desc"] = ""
             return course_obj
     except Exception as e:
         # Fail silently or log if needed, but keep the course object
         return course_obj
 
 
-def process_single_description(description: str) -> Union[Dict[str, Any], None, dict]:
+def process_single_description(description: str) -> Dict[str, Any]:
     """
     Takes a single course description, queries the Gemini model using the prompt template,
     and returns the parsed JSON output.
+
+    {
+        "prereq_tree": None,
+        "coreq_tree": None,
+        "restrictions": [],
+        "error": "API Error",
+        "raw_response": "",
+    }
+
     """
 
-    if description.lower() in ("", "no description"):
-        return {
-            "prereq_tree": None,
-            "coreq_tree": None,
-            "restrictions": [],
-        }
+    default = {
+        "prereq_tree": None,
+        "coreq_tree": None,
+        "restrictions": [],
+    }
 
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
         logger.error("GEMINI_API_KEY environment variable is not set.")
-        return None
+        default.update(
+            {
+                "error": "API Key Error",
+                "raw_response": "",
+            }
+        )
+        return default
+
+    if description.lower() in ("", "no description"):
+        return default
 
     client = genai.Client(api_key=api_key)
 
@@ -100,17 +119,35 @@ def process_single_description(description: str) -> Union[Dict[str, Any], None, 
             # Handle potential 'undefined' values from model output
             clean_text = response.text.replace("undefined", "null")
             parsed_json = json.loads(clean_text)
-            return parsed_json
+
+            # get the valid keys
+            default.update(
+                {
+                    k: parsed_json[k]
+                    for k in ("prereq_tree", "coreq_tree", "restrictions")
+                    if k in parsed_json.keys()
+                }
+            )
+            return default
         except json.JSONDecodeError:
             logger.error(f"Error parsing JSON. Raw output: {response.text}")
-            return {
-                "error": "JSON Parse Error",
-                "raw_response": response.text,
-            }
+            default.update(
+                {
+                    "error": "JSON Parse Error",
+                    "raw_response": response.text,
+                }
+            )
+            return default
 
     except Exception as e:
         logger.error(f"Gemini API Error: {e}")
-        return {}
+        default.update(
+            {
+                "error": "API Error",
+                "raw_response": "",
+            }
+        )
+        return default
 
 
 # ===== SECTION SCRAPER FUNCTIONS =====
@@ -268,11 +305,11 @@ def extract_sections_from_html(html_content: str, term: str) -> None:
             if not course_id:
                 continue
 
-            honors_sections = False
+            is_honors_part = False
 
             header: str = h4.get_text(strip=True)
             if header.lower().endswith("honors"):
-                honors_sections = True
+                is_honors_part = True
                 right_dash = header.rfind("-")
                 left_dash = header.find("-")
 
@@ -318,21 +355,21 @@ def extract_sections_from_html(html_content: str, term: str) -> None:
                     section_key = td_values[0]
                     sections[section_key] = td_values
 
-                    # # Check for lecturer change or new section
-                    # new_lecturer = td_values[8]
-                    # if new_lecturer:
-                    #     # Get existing lecturer for this section if it exists
-                    #     existing_sections = (
-                    #         COURSE_DATA.get(course_id, {})
-                    #         .get("sections", {})
-                    #         .get(term, {})
-                    #     )
-                    #     existing_lecturer = None
-                    #     if section_key in existing_sections:
-                    #         existing_lecturer = existing_sections[section_key][8]
+                    """   # Check for lecturer change or new section
+                    new_lecturer = td_values[8]
+                    if new_lecturer:
+                        # Get existing lecturer for this section if it exists
+                        existing_sections = (
+                            COURSE_DATA.get(course_id, {})
+                            .get("sections", {})
+                            .get(term, {})
+                        )
+                        existing_lecturer = None
+                        if section_key in existing_sections:
+                            existing_lecturer = existing_sections[section_key][8]
 
-                    #     # if existing_lecturer != new_lecturer:
-                    #     #     sync_lecturer_rating(new_lecturer)
+                        # if existing_lecturer != new_lecturer:
+                        #     sync_lecturer_rating(new_lecturer)"""
 
                     try:
                         num_credits = float(td_values[-3])
@@ -340,38 +377,36 @@ def extract_sections_from_html(html_content: str, term: str) -> None:
                         num_credits = None
 
                 course_id = course_id.replace("\u00a0", " ")
+                course_obj: CourseInfoModel = None
                 if course_id not in COURSE_DATA.keys():
+                    course_obj = CourseInfoModel(title=header)
                     logger.info(f"New Course Found: {course_id}")
                     # fetch individual course details
-                    course_obj = get_individual_course(course_id)
+                    title_desc = get_course_title_desc(course_id)
+                    course_obj = course_obj.model_copy(update=title_desc)
 
                     # process description with ai model
-                    course_returns = process_single_description(course_obj["desc"])
-                    course_obj.update(course_returns)
-
-                    if course_obj["title"] in ("Unkown", ""):
-                        course_obj["title"] = header
-                    course_obj["sections"] = {}
-                    course_obj["sections"][term] = sections
-                    COURSE_DATA[course_id] = course_obj
+                    processed_course = process_single_description(course_obj.desc)
+                    course_obj = course_obj.model_copy(update=processed_course)
+                else:
+                    course_obj = COURSE_DATA[course_id]
                 # elif "sections" not in COURSE_DATA[course_id].keys():
                 #     COURSE_DATA[course_id]["sections"] = {}
 
-                if (
-                    honors_sections
-                    and term in COURSE_DATA[course_id]["sections"].keys()
-                ):
-                    COURSE_DATA[course_id]["sections"][term].update(sections)
+                if is_honors_part and term in course_obj.sections.keys():
+                    course_obj.sections[term].update(sections)
                 else:
-                    COURSE_DATA[course_id]["sections"][term] = sections
+                    course_obj.sections[term] = sections
 
-                if COURSE_DATA[course_id]["title"] in ("Unkown", ""):
-                    COURSE_DATA[course_id]["title"] = header
+                # if course_obj.title in ("Unkown", ""):
+                #     course_obj.title = header
 
-                COURSE_DATA[course_id]["credits"] = num_credits
+                course_obj.credits = num_credits
 
-                if not COURSE_DATA[course_id]["sections"]:
-                    logger.warning(f"{course_id} has no sections")
+                COURSE_DATA[course_id] = course_obj
+
+                # if not course_obj.sections:
+                #     logger.warning(f"{course_id} has no sections")
 
     except Exception as e:
         logger.error(f"Error parsing HTML: {e}")
@@ -506,14 +541,10 @@ def scrape_courses(
 
     # Save to JSON and Redis
     if run_catalog or run_sections:
-        if output_file:
-            with open(output_file, "w") as f:
-                json.dump(COURSE_DATA, f, indent=4)
-        else:
-            set_redis_course_data(COURSE_DATA)
-            # for now update the file too
-            with open(COURSE_DATA_FILE, "w") as f:
-                json.dump(CourseStructureModel(COURSE_DATA).model_dump(), f, indent=4)
+        set_redis_course_data(COURSE_DATA)
+        # for now update the file too
+        with open(COURSE_DATA_FILE, "w") as f:
+            json.dump(CourseStructureModel(COURSE_DATA).model_dump(), f, indent=4)
     else:
         logger.warning(
             "No action performed. Use catalog=True, sections=True, or both=False to run."

@@ -1,10 +1,10 @@
+import sys
 import json
 import requests
 import time
 from functools import cache
 from backend.scrapers.constants import (
     DEFAULT_RATING,
-    CACHE_EXPIRATION_SECONDS,
     logger,
     COURSE_DATA,
     LECTURER_DATA,
@@ -12,10 +12,10 @@ from backend.scrapers.constants import (
     LecturerStructureModel,
 )
 from backend.constants import LECTURERS_DATA_FILE
+from backend.types import LecturerRating
 
 
-@cache
-def sync_lecturer_rating(lecturer_name: str, existing_data: dict = None):
+def sync_lecturer_rating(lecturer_name: str, existing_data: LecturerRating | None):
     """
     Fetches the rating for a lecturer from the proxy API and updates Redis.
     lecturer_name format: "Lastname, Firstname"
@@ -24,10 +24,10 @@ def sync_lecturer_rating(lecturer_name: str, existing_data: dict = None):
     if not lecturer_name:
         return
 
-    if existing_data:
-        last_updated = existing_data.get("last_updated", 0)
-        if time.time() - last_updated < CACHE_EXPIRATION_SECONDS:
-            return
+    # if existing_data:
+    #     last_updated = existing_data.
+    #     if time.time() - last_updated < CACHE_EXPIRATION_SECONDS:
+    #         return
 
     logger.debug(f"Syncing rating for: {lecturer_name}")
 
@@ -43,12 +43,12 @@ def sync_lecturer_rating(lecturer_name: str, existing_data: dict = None):
         )
 
         if not response.ok or response.status_code == 204:
-            rating = DEFAULT_RATING.copy()
+            rating = LecturerRating.model_validate(DEFAULT_RATING.copy())
         else:
-            rating = response.json()
+            rating = LecturerRating.model_validate(response.json())
 
         # Update last_updated field
-        rating["last_updated"] = time.time()
+        rating.lastUpdated = time.time()
 
         logger.info(f"Returned rating for {lecturer_name}")
         return rating
@@ -59,9 +59,7 @@ def sync_lecturer_rating(lecturer_name: str, existing_data: dict = None):
 
 def check_all_lecturers():
     """
-    Checks all lecturers found in course data and updates their ratings in Redis if expired.
-    Uses pipelining for efficient batch operations.
-    """
+    Checks all lecturers found in course data and updates their ratings in Redis if expired."""
     # Collect all unique lecturers
     if not LECTURER_DATA:
         logger.error("LECTURER_DATA NOT LOADED!")
@@ -79,7 +77,7 @@ def check_all_lecturers():
                 if lecturer:
                     unique_lecturers.add(lecturer)
 
-    lecturers_list = sorted(list(unique_lecturers))
+    lecturers_list = sorted(set(unique_lecturers))
     logger.info(f"Found {len(lecturers_list)} unique lecturers to check.")
 
     for i, lecturer in enumerate(lecturers_list):
@@ -91,7 +89,10 @@ def check_all_lecturers():
             lecturer_name=lecturer, existing_data=existing_obj
         )
 
-        LECTURER_DATA[lecturer] = new_rating
+        if not new_rating:
+            LECTURER_DATA[lecturer] = existing_obj
+        else:
+            LECTURER_DATA[lecturer] = new_rating
 
         if (i + 1) % 50 == 0:
             logger.info(f"Processed {i + 1}/{len(lecturers_list)} lecturers...")
@@ -104,6 +105,10 @@ def check_all_lecturers():
 
 
 if __name__ == "__main__":
+    if len(sys.argv) == 2:
+        print(sync_lecturer_rating(sys.argv[1], None))
+        sys.exit()
+        
     if not LECTURER_DATA:
         raise Exception("LECTURER_DATA NOT LOADED!")
     if not COURSE_DATA:
