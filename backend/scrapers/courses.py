@@ -264,7 +264,7 @@ def extract_sections_from_html(html_content: str, term: str) -> None:
 
         for h4 in h4_elements:
             # Extract id from h4
-            course_id = h4.get("id")
+            course_id: str = h4.get("id")
             if not course_id:
                 continue
 
@@ -318,21 +318,21 @@ def extract_sections_from_html(html_content: str, term: str) -> None:
                     section_key = td_values[0]
                     sections[section_key] = td_values
 
-                    # Check for lecturer change or new section
-                    new_lecturer = td_values[8]
-                    if new_lecturer:
-                        # Get existing lecturer for this section if it exists
-                        existing_sections = (
-                            COURSE_DATA.get(course_id, {})
-                            .get("sections", {})
-                            .get(term, {})
-                        )
-                        existing_lecturer = None
-                        if section_key in existing_sections:
-                            existing_lecturer = existing_sections[section_key][8]
+                    # # Check for lecturer change or new section
+                    # new_lecturer = td_values[8]
+                    # if new_lecturer:
+                    #     # Get existing lecturer for this section if it exists
+                    #     existing_sections = (
+                    #         COURSE_DATA.get(course_id, {})
+                    #         .get("sections", {})
+                    #         .get(term, {})
+                    #     )
+                    #     existing_lecturer = None
+                    #     if section_key in existing_sections:
+                    #         existing_lecturer = existing_sections[section_key][8]
 
-                        # if existing_lecturer != new_lecturer:
-                        #     sync_lecturer_rating(new_lecturer)
+                    #     # if existing_lecturer != new_lecturer:
+                    #     #     sync_lecturer_rating(new_lecturer)
 
                     try:
                         num_credits = float(td_values[-3])
@@ -354,8 +354,8 @@ def extract_sections_from_html(html_content: str, term: str) -> None:
                     course_obj["sections"] = {}
                     course_obj["sections"][term] = sections
                     COURSE_DATA[course_id] = course_obj
-                elif "sections" not in COURSE_DATA[course_id].keys():
-                    COURSE_DATA[course_id]["sections"] = {}
+                # elif "sections" not in COURSE_DATA[course_id].keys():
+                #     COURSE_DATA[course_id]["sections"] = {}
 
                 if (
                     honors_sections

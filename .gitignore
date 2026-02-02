@@ -47,3 +47,4 @@ website/.next
 website/out
 *chromadb*
 *__pycache__*
+*log*

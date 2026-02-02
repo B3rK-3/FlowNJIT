@@ -5,17 +5,19 @@
 - solidifiy plans on querying classes and prereqs
 
 - add a sepearet graph page to the website that allows users to add courses and export professor ratings and prereqs
-- make equivalence node and clean up grahp.json
+- clean up grahp.json
 
 
 fix hallucinations with empty description in graph data
 update frontend to use the lecturer.json instead of fetching again from proxy
 
-- migrate courses data from json to redis.
-    - migrated lecturer.json to cache to redis for fast access
-    - need to migrate the graph.json in the website to redis
-        - need a good method of doing so
 
+
+- test backend.scrapers.courses
+- purge logs older than 10 days. or zip 
+
+
+## DONE
 - functionalities for make schedule
     - allow users to enter locked in sections, the format:
         - locked_in_sections: {course_names: [section_numbers converted to integer]} and for thatt course_name only these sections should be considered
@@ -23,3 +25,7 @@ update frontend to use the lecturer.json instead of fetching again from proxy
     -in addition to min_days, allow which days. format:
         - days: ["Wednesday", "Thursday"]
         - these should be .lower and converted to the corresponding letter in the sections day format
+- migrate courses data from json to redis.
+    - migrated lecturer.json to cache to redis for fast access
+    - need to migrate the graph.json in the website to redis
+        - need a good method of doing so

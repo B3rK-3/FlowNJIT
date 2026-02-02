@@ -10,11 +10,15 @@ import os
 import logging
 import json
 
+logging.root.handlers = []
 logging.basicConfig(
-    filename=os.path.join(LOGS_DIR, "scrapers.log"),
     format="%(asctime)s - %(levelname)s: %(message)s",
     datefmt="%m/%d/%Y %I:%M:%S %p",
     level=logging.DEBUG,
+    handlers=[
+        logging.FileHandler(os.path.join(LOGS_DIR, "scrapers.log"),),
+        logging.StreamHandler()
+    ]
 )
 logger = logging.getLogger("scrapers")
 
