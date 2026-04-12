@@ -18,6 +18,7 @@ from backend.scrapers.constants import (
     set_redis_course_data,
     CourseStructureModel,
 )
+from backend.types import CourseInfoModel
 from backend.constants import COURSE_DATA_FILE
 from backend.types import CourseInfoModel
 
@@ -468,27 +469,32 @@ def scrape_undergrad_grad_catalog(url: str) -> None:
             course_code = title[0].strip()
             title = title[1].strip()
 
+            course_returns = process_single_description(description)
+
             if course_code in COURSE_DATA:
                 course_obj = COURSE_DATA[course_code]
-                if course_obj["title"] != title:
+                changed = False
+                if course_obj.title != title:
                     logger.info(
-                        f"Title changed: {course_code} | Old: {course_obj['title']} | New: {title}"
+                        f"Title changed: {course_code} | Old: {course_obj.title} | New: {title}"
                     )
-                    course_obj["title"] = title
-                elif course_obj["desc"] != description:
+                    course_obj = course_obj.model_copy(update={"title": title})
+                    changed = True
+                elif course_obj.desc != description:
                     logger.info(f"Description changed for {course_code}")
-                    course_obj["desc"] = description
-                    # update existing course with ai data
-                    course_returns = process_single_description(course_obj["desc"])
-                    course_obj.update(course_returns)
+                    course_obj = course_obj.model_copy(
+                        update={"desc": description, **course_returns}
+                    )
+                    changed = True
+                if changed:
+                    COURSE_DATA[course_code] = course_obj
             else:
-                course_obj = {"title": title, "desc": description}
-                # process new course description with ai
-                course_returns = process_single_description(description)
-                course_obj.update(course_returns)
-            if "sections" not in course_obj.keys():
-                course_obj["sections"] = {}
-            COURSE_DATA[course_code] = course_obj
+                course_obj = CourseInfoModel(
+                    title=title,
+                    desc=description,
+                    **course_returns,
+                )
+                COURSE_DATA[course_code] = course_obj
 
         logger.info(f"Found {len(COURSE_DATA)} courses")
 
