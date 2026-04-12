@@ -280,7 +280,10 @@ def run_section_scraper(term: str) -> Dict[str, Any]:
             # fetch courses for specific subject
             response_data = fetch_courses(subj, term, max_results="500")
 
-            final_data[subj] = response_data
+            if response_data is not None:
+                final_data[subj] = response_data
+            else:
+                logger.warning(f"Failed to fetch courses for {subj}, skipping")
 
             time.sleep(0.2)
 
