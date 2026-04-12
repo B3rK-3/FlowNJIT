@@ -835,6 +835,9 @@ def get_tools(
                 if earliest_min is not None or latest_min is not None:
                     filtered_by_time = {}
                     for sid, sdata in term_sections.items():
+                        if sdata[9].lower() == "online virtual":
+                            filtered_by_time[sid] = sdata
+                            continue
                         times = sdata[3]
                         days = sdata[2]
                         parsed = parse_section_times(times, days)
