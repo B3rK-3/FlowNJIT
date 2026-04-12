@@ -1,7 +1,7 @@
 from typing import List, Dict, Union, Optional, Literal, Tuple, Any, Annotated
 from pydantic import BaseModel, RootModel, ConfigDict, Field
 
-TERMS = Literal["202610", "202595", "202590", "202550", "202510"]
+TERMS = Literal['202690', "202610", "202595", "202590", "202550", "202510"]
 
 
 #### ---- COURSE DATA SCHEMA - BEGIN ------ ####

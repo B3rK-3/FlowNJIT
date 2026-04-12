@@ -14,14 +14,14 @@ export let _COURSE_DATA: CourseStructure = {};
 
 let sessionUUID: string = "";
 
-export const terms = ["202610", "202595", "202590", "202550", "202510"];
+export const terms = ['202690', "202610", "202595", "202590", "202550", "202510"];
 export const semesters = {
     "10": "Spring",
     "90": "Fall",
     "95": "Winter",
     "50": "Summer",
 };
-export let currentTerm = "202610";
+export let currentTerm = "202690";
 
 export let sectionsData: Record<string, SectionEntries> = {};
 export let currentTermCourses = new Set<string>();

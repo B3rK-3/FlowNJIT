@@ -1,0 +1,41 @@
+================================================================================
+                    N J I T   C O U R S E   F L O W C H A R T
+                                 TECH STACK
+================================================================================
+
+      +------------------------------------------------------------------+
+      |                           FRONTEND                               |
+      +------------------------------------------------------------------+
+      |  [FRAMEWORK]  Next.js (v16.1.0)                                  |
+      |  [LIBRARY]    React (v19.2.3)                                    |
+      |  [LANGUAGE]   TypeScript / HTML / CSS                            |
+      |  [STYLING]    Tailwind CSS (v4)                                  |
+      |  [VISUALS]    React Flow (@xyflow/react) - Node-based UI         |
+      |               ELK.js - Graph layout & positioning                |
+      |               Lucide React - Icons                               |
+      |               React Markdown - Rich text rendering               |
+      +------------------------------------------------------------------+
+                                     |
+    [ REST API / Data Fetching ] <---+---> [ Server Actions / API Routes ]
+                                     |
+      +------------------------------------------------------------------+
+      |                           BACKEND                                |
+      +------------------------------------------------------------------+
+      |  [LANGUAGE]   Python 3                                           |
+      |  [WEB/API]    Pydantic, Requests                                 |
+      |  [SCRAPING]   BeautifulSoup4                                     |
+      |  [DATABASE]   SQLite (courses.db)                                |
+      +------------------------------------------------------------------+
+                                     |
+    [ Vector Embeddings / ML ] <-----+-----> [ LLM Generation ]
+                                     |
+      +------------------------------------------------------------------+
+      |                      AI & MACHINE LEARNING                       |
+      +------------------------------------------------------------------+
+      |  [VECTOR DB]  ChromaDB                                           |
+      |  [MODELS]     Google GenAI / OpenAI                              |
+      |  [EMBEDDING]  Sentence-Transformers                              |
+      |  [FRAMEWORK]  PyTorch (torch)                                    |
+      +------------------------------------------------------------------+
+
+================================================================================

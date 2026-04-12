@@ -494,7 +494,7 @@ def scrape_undergrad_grad_catalog(url: str) -> None:
 
 
 def scrape_courses(
-    term: str = "202610",
+    term: str = "202690",
     output_file: str = None,
     catalog: bool = False,
     sections: bool = False,
@@ -560,7 +560,7 @@ def main():
     parser.add_argument(
         "--term",
         type=str,
-        default="202610",
+        default="202690",
         help="Term code to scrape sections for year(10 spring, 95 winter, 90 fall, 50 summer).\n"
         "Examples:\n"
         "  - 202610: Spring 2026\n"
