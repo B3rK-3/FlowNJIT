@@ -695,7 +695,9 @@ def get_tools(
             "max_days": "Maximum number of days per week the user wants to attend classes (1-5).",
             "locked_in_sections": "Dictionary where keys are course names and values are lists of section numbers (strings) to lock in. Only these sections will be considered for the respective courses.",
             "min_rmp_rating": "Minimum RateMyProfessors rating (0.0 - 5.0) required for instructors.",
-            "days": "List of specific days (e.g., ['Monday', 'Wednesday']) the user can attend classes."
+            "days": "List of specific days (e.g., ['Monday', 'Wednesday']) the user can attend classes.",
+            "earliest_time": "Earliest time a class can start, e.g. '8:00 AM'.",
+            "latest_time": "Latest time a class can end, e.g. '5:00 PM'."
             }
 
         Returns:
@@ -771,8 +773,17 @@ def get_tools(
 
             # 2. RMP Rating
             if args.min_rmp_rating is not None:
+                is_locked = (
+                    normalized_locked_in and course_name in normalized_locked_in
+                )
                 filtered_by_rating = {}
                 for sid, sdata in term_sections.items():
+                    if is_locked and sid in {
+                        normalize_section_id(s)
+                        for s in normalized_locked_in[course_name]
+                    }:
+                        filtered_by_rating[sid] = sdata
+                        continue
                     instructor = sdata[8]  # Index 8 is Instructor
                     try:
                         lecturer_rating = LECTURER_DATA[instructor]
@@ -807,6 +818,38 @@ def get_tools(
                     if all(char in allowed_chars for char in days_str if char != " "):
                         filtered_by_days[sid] = sdata
                 term_sections = filtered_by_days
+
+            # 4. Earliest / Latest Time
+            if args.earliest_time or args.latest_time:
+                earliest_min = None
+                latest_min = None
+                if args.earliest_time:
+                    parsed_earliest = parse_time_str(f"{args.earliest_time} - {args.earliest_time}")
+                    if parsed_earliest:
+                        earliest_min = parsed_earliest[0]
+                if args.latest_time:
+                    parsed_latest = parse_time_str(f"{args.latest_time} - {args.latest_time}")
+                    if parsed_latest:
+                        latest_min = parsed_latest[1]
+
+                if earliest_min is not None or latest_min is not None:
+                    filtered_by_time = {}
+                    for sid, sdata in term_sections.items():
+                        times = sdata[3]
+                        days = sdata[2]
+                        parsed = parse_section_times(times, days)
+                        if not parsed:
+                            continue
+                        all_start_times = [s for slots in parsed.values() for s, e in slots]
+                        all_end_times = [e for slots in parsed.values() for s, e in slots]
+                        earliest_section = min(all_start_times)
+                        latest_section = max(all_end_times)
+                        if earliest_min is not None and earliest_section < earliest_min:
+                            continue
+                        if latest_min is not None and latest_section > latest_min:
+                            continue
+                        filtered_by_time[sid] = sdata
+                    term_sections = filtered_by_time
 
             # --- FILTERING LOGIC END ---
 

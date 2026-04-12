@@ -322,6 +322,14 @@ class MakeScheduleFormat(BaseModel):
         default=False,
         description="True if student is honors false if not. excludes honors courses",
     )
+    earliest_time: Optional[str] = Field(
+        default=None,
+        description="Earliest time a class can start. Format: 'HH:MM AM/PM' (e.g., '8:00 AM', '9:30 AM'). Sections starting before this time will be excluded.",
+    )
+    latest_time: Optional[str] = Field(
+        default=None,
+        description="Latest time a class can end. Format: 'HH:MM AM/PM' (e.g., '5:00 PM', '3:30 PM'). Sections ending after this time will be excluded.",
+    )
 
 
 class CourseMetadata(BaseModel):
