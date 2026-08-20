@@ -7,12 +7,13 @@ from backend.functions import (
     set_local_data,
     gemini_call_stream,
 )
+from backend.rate_limit import get_client_identity, get_retry_after
 from backend.types import (
     ProfsResponse,
     ProfsRequest,
     ChatRequest,
 )
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Request
 
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
@@ -56,6 +57,9 @@ app.add_middleware(GZipMiddleware, minimum_size=500, compresslevel=5)
 
 logger = logging.getLogger(__name__)
 update_listener_stop = threading.Event()
+
+CHAT_RATE_LIMIT = 5
+CHAT_RATE_LIMIT_WINDOW_SECONDS = 60
 
 
 def listen_for_scraper_updates():
@@ -118,10 +122,26 @@ async def root():
 async def health_check():
     return {"status": "ok"}
 @app.post("/chat")
-async def chat_endpoint(request: ChatRequest):
+async def chat_endpoint(chat_request: ChatRequest, request: Request):
+    client_identity = get_client_identity(request)
+    retry_after = get_retry_after(
+        constants.get_redis(),
+        f"rate-limit:chat:{client_identity}",
+        CHAT_RATE_LIMIT,
+        CHAT_RATE_LIMIT_WINDOW_SECONDS,
+    )
+    if retry_after is not None:
+        raise HTTPException(
+            status_code=429,
+            detail="Rate limit exceeded. Maximum 5 chat requests per minute.",
+            headers={"Retry-After": str(retry_after)},
+        )
     async def generate():
         async for chunk in gemini_call_stream(
-            request.query, request.sessionID, request.term, request.attachments
+            chat_request.query,
+            chat_request.sessionID,
+            chat_request.term,
+            chat_request.attachments,
         ):
             yield json.dumps(chunk) + "\n"
 

@@ -185,6 +185,11 @@ export default function ChatPopup({
                 })
                     .then(async (response) => {
                         if (!response.ok || !response.body) {
+                            if (response.status === 429) {
+                                throw new Error(
+                                    "Slow down there—allow yourself a moment to think."
+                                );
+                            }
                             throw new Error(errorMessage);
                         }
 
@@ -254,12 +259,15 @@ export default function ChatPopup({
                         }
                         setIsLoading(false);
                     })
-                    .catch((e) => {
+                    .catch((error: unknown) => {
                         setMessages((prevMessages) => [
                             ...prevMessages,
                             {
                                 id: Date.now(),
-                                text: errorMessage,
+                                text:
+                                    error instanceof Error
+                                        ? error.message
+                                        : errorMessage,
                                 sender: "bot",
                             },
                         ]);

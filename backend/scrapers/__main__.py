@@ -27,7 +27,6 @@ def semantic_catalog_fingerprint() -> str:
 def run_course_scraper():
     print('starting course scraper')
     while True:
-        time.sleep(5 * 60)
         try:
             if not os.path.exists(TERM_FILE_PATH):
                 logger.warning(f"{TERM_FILE_PATH} not found. Skipping course scrape.")
@@ -53,6 +52,7 @@ def run_course_scraper():
 
         except Exception as e:
             logger.error(f"Error in Course Scraper: {e}")
+        time.sleep(5 * 60)
 
 
 def run_lecturer_check():
