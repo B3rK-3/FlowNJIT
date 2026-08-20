@@ -207,18 +207,50 @@ curl -i -X POST http://127.0.0.1:3001/getprofs \
 
 A successful `/getcourses` request proves that FastAPI, Redis loading, and course serialization work. It does not prove semantic search or Gemini streaming; test `/chat` separately with a valid request and API key.
 
-## Exposing the backend with Cloudflare Tunnel
+## Exposing FlowNJIT with Cloudflare Tunnel
 
-A tunnel avoids router port forwarding and carrier-grade NAT. Install the Linux ARM64 `cloudflared` binary using Cloudflare's current instructions, then test with a quick tunnel:
+### Why `service install` fails on Android
+
+If you ran `cloudflared service install`, it will **not** run in the background because Android/Termux/PRoot **does not have `systemd`**. The service installer writes a systemd unit file that Android's init system ignores. You must run `cloudflared` directly as a regular process inside your PRoot session or `tmux`.
+
+### 1. Install the Linux ARM64 binary (inside Ubuntu PRoot)
+
+Make sure `cloudflared` is installed inside Ubuntu PRoot (not just outer Termux):
 
 ```bash
-cloudflared tunnel --url http://127.0.0.1:3001
+curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64 -o /usr/local/bin/cloudflared
+chmod +x /usr/local/bin/cloudflared
+cloudflared --version
 ```
 
-Use a named tunnel for a stable hostname. Keep FastAPI bound to loopback when only `cloudflared` needs to reach it; this avoids exposing port 3001 directly on the local network.
+### 2. Method A: Cloudflare Zero Trust Dashboard Tunnel (Recommended)
 
-Before connecting the website to the tunnel, update the production backend URL and CORS settings described above.
+To have your tunnel appear and stay connected on the [Cloudflare Zero Trust Dashboard](https://one.dash.cloudflare.com):
 
+1. In Cloudflare Zero Trust: Go to **Networks → Tunnels → Create a tunnel**.
+2. Select **Cloudflared**, name it (e.g. `flownjit-phone`).
+3. Select **Docker** or **Linux (arm64)** to reveal your command:
+   ```bash
+   cloudflared tunnel run --token <EY...YOUR_TOKEN>
+   ```
+4. In the **Public Hostnames** tab of your tunnel:
+   - Add hostname: `flownjit.yourdomain.com` → Service: `HTTP` → `localhost:3000` (Frontend)
+   - (Optional) Add API hostname: `api.flownjit.yourdomain.com` → Service: `HTTP` → `localhost:3001` (Backend)
+5. Save the token into `backend/.env`:
+   ```bash
+   echo "CLOUDFLARE_TUNNEL_TOKEN=your_token_here" >> backend/.env
+   ```
+6. Run with `./start.sh --tunnel`! The tunnel starts automatically and shows **HEALTHY** in your Cloudflare Dashboard.
+
+### 3. Method B: Ephemeral Quick Tunnel (No account needed)
+
+If you do not have a custom domain on Cloudflare:
+
+```bash
+./start.sh --tunnel
+```
+
+This launches a quick tunnel and prints the public `https://<random>.trycloudflare.com` URL in the console banner (and logs to `backend/logs/tunnel.log`).
 ## Preventing Android from killing background processes
 
 Android aggressively terminates background processes to conserve battery and RAM. Configure these layers to keep the server running reliably:

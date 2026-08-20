@@ -15,12 +15,26 @@ START_BACKEND=true
 START_FRONTEND=true
 START_SCRAPERS=true
 START_TUNNEL=false
+TUNNEL_TOKEN=""
+TUNNEL_NAME=""
 HOST="${HOST:-0.0.0.0}"
 BACKEND_PORT="${BACKEND_PORT:-3001}"
 FRONTEND_PORT="${FRONTEND_PORT:-3000}"
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 WEBSITE_DIR="${ROOT_DIR}/website"
+LOGS_DIR="${ROOT_DIR}/backend/logs"
+mkdir -p "$LOGS_DIR"
+
+# Load backend .env if present
+if [ -f "${ROOT_DIR}/backend/.env" ]; then
+    set -a
+    source "${ROOT_DIR}/backend/.env"
+    set +a
+fi
+
+TUNNEL_TOKEN="${CLOUDFLARE_TUNNEL_TOKEN:-$TUNNEL_TOKEN}"
+TUNNEL_NAME="${CLOUDFLARE_TUNNEL_NAME:-$TUNNEL_NAME}"
 
 # PIDs to manage
 BACKEND_PID=""
@@ -39,7 +53,9 @@ show_help() {
     echo "  --prod, -p           Run frontend in production mode (builds if needed and runs 'next start')"
     echo "  --scrapers, -s       Launch background data scrapers (enabled by default)"
     echo "  --no-scrapers        Do not launch background data scrapers"
-    echo "  --tunnel, -t         Start a Cloudflare quick tunnel for the frontend"
+    echo "  --tunnel, -t         Start Cloudflare tunnel (Quick tunnel or uses CLOUDFLARE_TUNNEL_TOKEN from .env)"
+    echo "  --tunnel-token <tok> Start Cloudflare Zero Trust tunnel using a dashboard token"
+    echo "  --tunnel-name <name> Start Cloudflare named tunnel by name"
     echo "  --backend-only       Start only Redis and the FastAPI backend"
     echo "  --frontend-only      Start only the Next.js frontend"
     echo "  --scrapers-only      Start only Redis and the background scraper worker"
@@ -73,6 +89,16 @@ while [[ $# -gt 0 ]]; do
         --tunnel|-t)
             START_TUNNEL=true
             shift
+            ;;
+        --tunnel-token)
+            START_TUNNEL=true
+            TUNNEL_TOKEN="$2"
+            shift 2
+            ;;
+        --tunnel-name)
+            START_TUNNEL=true
+            TUNNEL_NAME="$2"
+            shift 2
             ;;
         --backend-only)
             START_FRONTEND=false
@@ -233,13 +259,47 @@ if [ "$START_FRONTEND" = true ]; then
 fi
 
 # 5. Optional Cloudflare Tunnel
+TUNNEL_URL=""
 if [ "$START_TUNNEL" = true ]; then
-    echo -e "\n${YELLOW}Starting Cloudflare Quick Tunnel for frontend (port ${FRONTEND_PORT})...${NC}"
+    echo -e "\n${YELLOW}Starting Cloudflare Tunnel...${NC}"
     if command -v cloudflared >/dev/null 2>&1; then
-        cloudflared tunnel --url "http://127.0.0.1:${FRONTEND_PORT}" &
-        TUNNEL_PID=$!
+        TUNNEL_LOG="${LOGS_DIR}/tunnel.log"
+        > "$TUNNEL_LOG"
+        
+        if [ -n "$TUNNEL_TOKEN" ]; then
+            echo -e "Launching Cloudflare Zero Trust Tunnel via Dashboard Token..."
+            cloudflared tunnel --no-autoupdate run --token "$TUNNEL_TOKEN" > "$TUNNEL_LOG" 2>&1 &
+            TUNNEL_PID=$!
+            TUNNEL_URL="(Managed via Cloudflare Dashboard)"
+        elif [ -n "$TUNNEL_NAME" ]; then
+            echo -e "Launching Cloudflare Named Tunnel: $TUNNEL_NAME..."
+            cloudflared tunnel --no-autoupdate run "$TUNNEL_NAME" > "$TUNNEL_LOG" 2>&1 &
+            TUNNEL_PID=$!
+            TUNNEL_URL="(Named tunnel: $TUNNEL_NAME)"
+        else
+            echo -e "Launching Cloudflare Quick Tunnel for http://127.0.0.1:${FRONTEND_PORT}..."
+            cloudflared tunnel --no-autoupdate --url "http://127.0.0.1:${FRONTEND_PORT}" > "$TUNNEL_LOG" 2>&1 &
+            TUNNEL_PID=$!
+            
+            # Wait up to 10s for quick tunnel URL to appear in log
+            for i in {1..10}; do
+                QUICK_URL=$(grep -o 'https://[-a-zA-Z0-9]*\.trycloudflare\.com' "$TUNNEL_LOG" | head -n1 || true)
+                if [ -n "$QUICK_URL" ]; then
+                    TUNNEL_URL="$QUICK_URL"
+                    break
+                fi
+                sleep 1
+            done
+        fi
+        
+        if [[ -n "$TUNNEL_PID" ]] && kill -0 "$TUNNEL_PID" 2>/dev/null; then
+            echo -e "${GREEN}✓ Cloudflare tunnel connected!${NC}"
+        else
+            echo -e "${RED}✗ Cloudflare tunnel failed to start. Check backend/logs/tunnel.log${NC}"
+        fi
     else
-        echo -e "${RED}cloudflared is not installed. Install it to use --tunnel.${NC}"
+        echo -e "${RED}✗ cloudflared binary is not found in PATH.${NC}"
+        echo -e "${YELLOW}  Install with: curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64 -o /usr/local/bin/cloudflared && chmod +x /usr/local/bin/cloudflared${NC}"
     fi
 fi
 
@@ -263,6 +323,11 @@ if [ "$START_SCRAPERS" = true ]; then
     echo -e "\n${BOLD}Background Scrapers:${NC}"
     echo -e "  • Status:      ${GREEN}Active (courses every 5m, RMP every 6h)${NC}"
     echo -e "  • Log File:    ${BLUE}backend/logs/scrapers.log${NC}"
+fi
+if [ "$START_TUNNEL" = true ] && [ -n "$TUNNEL_URL" ]; then
+    echo -e "\n${BOLD}Cloudflare Tunnel:${NC}"
+    echo -e "  • Public URL:  ${GREEN}${TUNNEL_URL}${NC}"
+    echo -e "  • Log File:    ${BLUE}backend/logs/tunnel.log${NC}"
 fi
 echo -e "\n${YELLOW}Press Ctrl+C anytime to stop all services.${NC}"
 echo -e "${GREEN}${BOLD}====================================================${NC}\n"
