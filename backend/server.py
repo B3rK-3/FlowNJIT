@@ -114,7 +114,7 @@ async def root():
         "status": "ok",
         "message": "FlowNJIT Backend API is running",
         "docs": "/docs",
-        "endpoints": ["/getcourses", "/getprofs", "/chat", "/docs", "/redoc"],
+        "endpoints": ["/getcourses", "/getprofs", "/chat", "/health"],
     }
 
 

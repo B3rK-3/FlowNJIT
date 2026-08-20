@@ -64,7 +64,7 @@ This ensures Redis catalog data is loaded into `COURSE_DATA` and term mapping be
 
 ### 4. Configurable frontend URL and CORS
 
-- **Frontend (`website/app/constants.ts`, `website/app/components/CourseSidebar.tsx`)**: Configurable via `NEXT_PUBLIC_BACKEND_URL` or `NEXT_PUBLIC_API_URL` (defaults to `http://localhost:3001` in dev, `https://flownjit.com` in prod).
+- **Frontend (`website/app/constants.ts`, `website/app/components/CourseSidebar.tsx`)**: Configurable via `NEXT_PUBLIC_BACKEND_URL` or `NEXT_PUBLIC_API_URL`. Server-side requests default to `http://localhost:3001`; browser requests use same-origin paths such as `/getcourses`, `/getprofs`, and `/chat`, which Next.js rewrites to the backend.
 - **Backend (`backend/server.py`)**: Configurable via `CORS_ORIGINS` (comma-separated list of origins) and `CORS_ORIGIN_REGEX` (e.g. `r"https://.*\.trycloudflare\.com"`), and binds to `HOST` and `PORT` environment variables if set.
 ## Recommended installation: Termux plus Ubuntu PRoot
 

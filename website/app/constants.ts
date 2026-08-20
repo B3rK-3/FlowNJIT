@@ -14,7 +14,7 @@ export const baseURL =
         ? process.env.BACKEND_INTERNAL_URL ||
           configuredBackendURL ||
           "http://127.0.0.1:3001"
-        : configuredBackendURL || "/api/backend";
+        : configuredBackendURL || "";
 export let _COURSE_DATA: CourseStructure = {};
 
 let sessionUUID: string = "";

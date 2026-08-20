@@ -279,8 +279,8 @@ if [ "$START_FRONTEND" = true ]; then
     echo -e "\n${YELLOW}[4/4] Starting Next.js frontend on ${HOST}:${FRONTEND_PORT} (mode: ${MODE})...${NC}"
     cd "$WEBSITE_DIR"
 
-    # Browser requests use Next.js's same-origin /api/backend proxy. Server-side
-    # rendering reaches FastAPI directly over loopback.
+    # Browser requests use same-path Next.js rewrites. Server-side rendering
+    # reaches FastAPI directly over loopback.
     export BACKEND_INTERNAL_URL="${BACKEND_INTERNAL_URL:-http://127.0.0.1:${BACKEND_PORT}}"
     export PORT="${FRONTEND_PORT}"
     export HOSTNAME="${HOST}"
@@ -394,9 +394,9 @@ if [ "$START_FRONTEND" = true ]; then
 fi
 if [ "$START_BACKEND" = true ]; then
     echo -e "\n${BOLD}Backend API & Docs:${NC}"
-    echo -e "  • Swagger UI:  ${BLUE}http://localhost:${BACKEND_PORT}/docs${NC}"
-    echo -e "  • Network API: ${BLUE}http://${LAN_IP}:${BACKEND_PORT}/docs${NC}"
-    echo -e "  • Endpoints:   ${BLUE}http://${LAN_IP}:${BACKEND_PORT}/getcourses${NC}"
+    echo -e "  • Local Swagger:   ${BLUE}http://localhost:${BACKEND_PORT}/docs${NC}"
+    echo -e "  • Network Swagger: ${BLUE}http://${LAN_IP}:${BACKEND_PORT}/docs${NC}"
+    echo -e "  • Endpoints:       ${BLUE}http://${LAN_IP}:${BACKEND_PORT}/getcourses${NC}"
 fi
 if [ "$START_SCRAPERS" = true ]; then
     echo -e "\n${BOLD}Background Scrapers:${NC}"
