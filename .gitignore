@@ -47,4 +47,6 @@ website/.next
 website/out
 *chromadb*
 *__pycache__*
-*log*
+*.log
+dump.rdb
+dum.rdb
