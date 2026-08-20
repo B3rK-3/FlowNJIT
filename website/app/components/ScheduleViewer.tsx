@@ -76,20 +76,20 @@ export default function ScheduleViewer({
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 md:p-8">
-            <div className="bg-white dark:bg-slate-900 w-full h-full max-w-6xl rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-slate-200 dark:border-slate-800">
+            <div className="flex h-full w-full max-w-6xl flex-col overflow-hidden border border-black/20 bg-white shadow-2xl">
                 {/* Header */}
-                <div className="bg-slate-100 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 p-2 flex items-center justify-between">
+                <div className="flex items-center justify-between border-b-4 border-[#cc0000] bg-[#171717] p-2 text-white">
                     <div className="flex items-center overflow-x-auto gap-1 hide-scrollbar max-w-[calc(100%-3rem)]">
                         {schedules.map((_, idx) => (
                             <div
                                 key={idx}
                                 onClick={() => setActiveTab(idx)}
                                 className={`
-                                    flex items-center gap-2 px-4 py-2 rounded-lg cursor-pointer transition-all whitespace-nowrap text-sm font-medium
+                                    flex items-center gap-2 px-4 py-2 cursor-pointer transition-all whitespace-nowrap text-sm font-bold
                                     ${
                                         activeTab === idx
-                                            ? "bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm"
-                                            : "hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400"
+                                            ? "bg-[#cc0000] text-white"
+                                            : "text-white/60 hover:bg-white/10 hover:text-white"
                                     }
                                 `}
                             >
@@ -99,7 +99,7 @@ export default function ScheduleViewer({
                                         e.stopPropagation();
                                         onDelete(idx);
                                     }}
-                                    className="p-0.5 rounded-full hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors"
+                                    className="p-0.5 transition-colors hover:bg-white/20"
                                 >
                                     <X className="w-3 h-3" />
                                 </button>
@@ -108,7 +108,7 @@ export default function ScheduleViewer({
                     </div>
                     <button
                         onClick={onClose}
-                        className="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors text-slate-500"
+                        className="p-2 text-white/60 transition-colors hover:bg-white/15 hover:text-white"
                     >
                         <X className="w-6 h-6" />
                     </button>
@@ -175,7 +175,7 @@ export default function ScheduleViewer({
                                                         (slot, tIdx) => (
                                                             <div
                                                                 key={`${sIdx}-${tIdx}`}
-                                                                className="absolute w-[95%] left-[2.5%] rounded-md p-2 text-xs overflow-hidden shadow-sm border border-indigo-200 dark:border-indigo-800 bg-indigo-50 dark:bg-indigo-900/30 hover:z-10 hover:shadow-md transition-all group cursor-pointer"
+                                                                className="group absolute left-[2.5%] w-[95%] cursor-pointer overflow-hidden border-l-4 border-[#cc0000] bg-[#fff1f1] p-2 text-xs shadow-sm transition-all hover:z-10 hover:shadow-md"
                                                                 style={getPositionStyle(
                                                                     slot[0],
                                                                     slot[1]
@@ -187,7 +187,7 @@ export default function ScheduleViewer({
                                                                     onClose();
                                                                 }}
                                                             >
-                                                                <div className="font-bold text-indigo-700 dark:text-indigo-300">
+                                                                <div className="font-black text-[#990000]">
                                                                     {
                                                                         section.course
                                                                     }

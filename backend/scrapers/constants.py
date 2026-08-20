@@ -10,6 +10,7 @@ import os
 import logging
 import json
 
+os.makedirs(LOGS_DIR, exist_ok=True)
 logging.root.handlers = []
 logging.basicConfig(
     format="%(asctime)s - %(levelname)s: %(message)s",

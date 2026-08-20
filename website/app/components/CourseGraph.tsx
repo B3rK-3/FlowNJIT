@@ -36,12 +36,12 @@ function CourseNode({ data }: NodeProps) {
 
     return (
         <div
-            className={`px-4 py-3 rounded-xl shadow-lg border-2 transition-all duration-200 hover:shadow-xl ${
-                isSelected ? "ring-2 ring-indigo-500 ring-offset-2" : ""
+            className={`border-2 px-4 py-3 shadow-[3px_3px_0_rgba(23,23,23,0.12)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_rgba(23,23,23,0.16)] ${
+                isSelected ? "ring-2 ring-[#cc0000] ring-offset-2" : ""
             }`}
             style={{
                 background,
-                borderColor: isSelected ? "#6366f1" : borderColor,
+                borderColor: isSelected ? "#cc0000" : borderColor,
                 minWidth: "120px",
             }}
         >
@@ -77,10 +77,10 @@ function GateNode({ data }: NodeProps) {
     const isAnd = data.gateType === "AND";
     return (
         <div
-            className={`px-3 py-2 rounded-lg shadow-md border-2 font-bold text-xs transition-all duration-200 hover:shadow-lg ${
+            className={`border-2 px-3 py-2 text-xs font-black shadow-[2px_2px_0_rgba(23,23,23,0.12)] transition-all duration-200 ${
                 isAnd
-                    ? "bg-gradient-to-br from-amber-100 to-amber-200 border-amber-400 text-amber-800"
-                    : "bg-gradient-to-br from-sky-100 to-sky-200 border-sky-400 text-sky-800"
+                    ? "border-[#cc0000] bg-[#fff1f1] text-[#990000]"
+                    : "border-[#d69b00] bg-[#fff8dc] text-[#6d4f00]"
             }`}
         >
             <Handle
@@ -518,7 +518,7 @@ export default function CourseGraph({
     }, [calculateLayout, reactFlowInstance, setNodes, setEdges]);
 
     return (
-        <div className="w-full h-full bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 rounded-xl overflow-hidden shadow-inner">
+        <div className="h-full w-full overflow-hidden bg-[#f8f7f4]">
             <ReactFlow
                 nodes={nodes}
                 edges={edges}
@@ -531,19 +531,19 @@ export default function CourseGraph({
                 attributionPosition="bottom-left"
                 className="bg-transparent"
             >
-                <Background color="#94a3b8" gap={20} size={1} />
-                <Controls className="bg-white dark:bg-slate-800 rounded-lg shadow-lg" />
+                <Background color="#c9c5be" gap={24} size={1} />
+                <Controls className="rounded-none border border-black/10 bg-white shadow-md" />
                 {nodes.length <= 200 && (
                     <MiniMap
-                        nodeStrokeColor="#64748b"
+                        nodeStrokeColor="#68635d"
                         nodeColor={(n) => {
                             if (n.type === "gate")
                                 return n.data?.gateType === "AND"
-                                    ? "#fbbf24"
-                                    : "#38bdf8";
-                            return "#94a3b8";
+                                    ? "#cc0000"
+                                    : "#d69b00";
+                            return "#aaa49c";
                         }}
-                        className="bg-white dark:bg-slate-800 rounded-lg shadow-lg"
+                        className="rounded-none border border-black/10 bg-white shadow-md"
                     />
                 )}
             </ReactFlow>

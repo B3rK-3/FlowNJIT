@@ -1,13 +1,15 @@
 export default function Loading() {
     return (
-        <div className="fixed inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 via-white to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950 z-50">
-            <div className="relative">
-                <div className="h-16 w-16 rounded-full border-4 border-slate-200 dark:border-slate-700"></div>
-                <div className="absolute top-0 left-0 h-16 w-16 rounded-full border-4 border-indigo-600 border-t-transparent animate-spin"></div>
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#171717] text-white">
+            <div className="mb-5 grid h-14 w-14 place-items-center bg-[#cc0000]">
+                <div className="h-6 w-6 animate-spin border-2 border-white/35 border-t-white" />
             </div>
-            <h2 className="mt-4 text-lg font-medium text-slate-700 dark:text-slate-300 animate-pulse">
-                Loading courses...
-            </h2>
+            <div className="text-xl font-black uppercase tracking-[-0.03em]">
+                Flow<span className="text-[#ef2b2d]">NJIT</span>
+            </div>
+            <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.18em] text-white/45">
+                Mapping course pathways
+            </p>
         </div>
     );
 }

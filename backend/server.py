@@ -19,13 +19,33 @@ from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import StreamingResponse
 import uvicorn
 import json
+import os
 
 
 app = FastAPI()
-origins = ["http://localhost:3000", "https://flownjit.com", "https://www.flownjit.com"]
+
+default_origins = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "https://flownjit.com",
+    "https://www.flownjit.com",
+]
+
+env_origins = os.getenv("CORS_ORIGINS") or os.getenv("ALLOWED_ORIGINS")
+if env_origins:
+    origins = [o.strip() for o in env_origins.split(",") if o.strip()]
+    for default_o in default_origins:
+        if default_o not in origins:
+            origins.append(default_o)
+else:
+    origins = default_origins
+
+origin_regex = os.getenv("CORS_ORIGIN_REGEX")
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
+    allow_origin_regex=origin_regex,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -39,10 +59,9 @@ def startup():
 
     warmup_constants()
 
-    initialize_database()
     set_local_data()
     construct_term_courses()
-
+    initialize_database()
 
 @app.post("/chat")
 async def chat_endpoint(request: ChatRequest):
@@ -71,8 +90,9 @@ async def course_endpoint():
 
 
 def start():
-    uvicorn.run(app, host="127.0.0.1", port=3001)
-
+    host = os.getenv("HOST", "127.0.0.1")
+    port = int(os.getenv("PORT", "3001"))
+    uvicorn.run(app, host=host, port=port)
 
 if __name__ == "__main__":
     start()

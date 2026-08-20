@@ -2,8 +2,13 @@
 
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f4f2ee;
+  --foreground: #181818;
+  --njit-red: #cc0000;
+  --njit-red-dark: #990000;
+  --njit-black: #111111;
+  --njit-paper: #f4f2ee;
+  --njit-line: #d8d4ce;
 }
 
 @theme inline {
@@ -13,17 +18,45 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
 }
 
 body {
+  margin: 0;
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+::selection {
+  background: #cc0000;
+  color: white;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #b7b2aa;
+  border-radius: 999px;
 }
 
 @keyframes rollOut {

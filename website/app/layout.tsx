@@ -13,8 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "FlowNJIT",
-  description: "Made for NJIT",
+  title: "FlowNJIT | Course Pathway Explorer",
+  description:
+    "Explore NJIT course prerequisites, sections, and academic pathways.",
 };
 
 export default function RootLayout({

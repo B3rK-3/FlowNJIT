@@ -280,7 +280,7 @@ export default function ChatPopup({
     };
 
     return (
-        <div className="fixed bottom-6 right-6 z-50">
+        <div className="fixed bottom-4 right-4 z-50 sm:bottom-6 sm:right-6">
             {/* Schedule Viewer */}
             <ScheduleViewer
                 schedules={schedules}
@@ -296,7 +296,7 @@ export default function ChatPopup({
                     width: isOpen ? width : 0,
                     height: isOpen ? height : 0,
                 }}
-                className={`absolute bottom-20 right-0 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col ease-out origin-bottom-right ${
+                className={`absolute bottom-16 right-0 max-w-[calc(100vw-2rem)] overflow-hidden border border-black/15 bg-white shadow-[8px_8px_0_rgba(23,23,23,0.18)] flex flex-col ease-out origin-bottom-right ${
                     isOpen
                         ? "opacity-100 scale-100 pointer-events-auto"
                         : "opacity-0 scale-95 pointer-events-none"
@@ -309,27 +309,28 @@ export default function ChatPopup({
                 {/* Resize Handle - Top Left */}
                 <div
                     onMouseDown={() => setIsResizing(true)}
-                    className="absolute top-0 left-0 w-4 h-4 cursor-nwse-resize z-[60] hover:bg-indigo-500/10 transition-colors group"
+                    className="group absolute left-0 top-0 z-[60] h-4 w-4 cursor-nwse-resize transition-colors hover:bg-[#cc0000]/10"
                 >
-                    <div className="absolute top-1 left-1 w-2 h-2 border-t-2 border-l-2 border-slate-300 dark:border-slate-600 group-hover:border-indigo-500 transition-colors" />
+                    <div className="absolute left-1 top-1 h-2 w-2 border-l-2 border-t-2 border-black/25 transition-colors group-hover:border-[#cc0000]" />
                 </div>
 
                 {/* Header */}
-                <div className="bg-gradient-to-r from-indigo-600 to-indigo-700 px-4 py-3 flex items-center justify-between shrink-0">
+                <div className="flex shrink-0 items-center justify-between border-b-4 border-[#cc0000] bg-[#171717] px-4 py-3">
                     <div className="flex items-center gap-2">
                         <MessageCircle className="w-5 h-5 text-white" />
-                        <h3 className="font-semibold text-white">Course AI</h3>
+                        <h3 className="font-black uppercase tracking-wide text-white">Highlander AI</h3>
                     </div>
                     <button
+                        aria-label="Close course assistant"
                         onClick={() => setIsOpen(false)}
-                        className="text-white hover:bg-indigo-800 p-1 rounded-lg transition-colors cursor-pointer"
+                        className="cursor-pointer p-1 text-white transition-colors hover:bg-white/15"
                     >
                         <X className="w-5 h-5" />
                     </button>
                 </div>
 
                 {/* Messages Container */}
-                <div className="flex-1 overflow-y-auto flex flex-col gap-3 p-4 bg-slate-50 dark:bg-slate-800 relative">
+                <div className="relative flex flex-1 flex-col gap-3 overflow-y-auto bg-[#f4f2ee] p-4">
                     <style>{`
                         @keyframes typing {
                             0%, 60%, 100% { opacity: 0.5; }
@@ -386,8 +387,8 @@ export default function ChatPopup({
                             <div
                                 className={`max-w-[70%] px-4 py-2 rounded-lg ${
                                     message.sender === "user"
-                                        ? "bg-indigo-600 text-white rounded-br-none"
-                                        : "bg-white dark:bg-slate-700 text-slate-900 dark:text-white rounded-bl-none border border-slate-200 dark:border-slate-600"
+                                        ? "bg-[#cc0000] text-white rounded-br-none"
+                                        : "border border-black/10 bg-white text-[#171717] rounded-bl-none"
                                 }`}
                             >
                                 {message.sender === "user" ? (
@@ -430,7 +431,7 @@ export default function ChatPopup({
                     <div className="absolute bottom-[52px] left-0 w-full px-4 py-2 bg-gradient-to-t from-white to-transparent dark:from-slate-900 z-10 flex justify-center">
                         <button
                             onClick={() => setIsViewerOpen(true)}
-                            className="bg-emerald-500 hover:bg-emerald-600 text-white text-xs px-3 py-1 rounded-full shadow-md transition-all hover:scale-105 active:scale-95 flex items-center gap-1 "
+                            className="flex items-center gap-1 bg-[#171717] px-3 py-1 text-xs font-bold text-white shadow-md transition hover:bg-[#cc0000]"
                         >
                             <Calendar className="w-3 h-3" />
                             View Schedules ({schedules.length})
@@ -472,7 +473,7 @@ export default function ChatPopup({
                     />
                     <button
                         onClick={() => fileInputRef.current?.click()}
-                        className="p-2 text-slate-400 hover:text-indigo-600 transition-colors cursor-pointer"
+                        className="cursor-pointer p-2 text-black/40 transition-colors hover:text-[#cc0000]"
                         title="Attach PDF"
                     >
                         <Paperclip className="w-5 h-5" />
@@ -483,11 +484,12 @@ export default function ChatPopup({
                         onChange={(e) => setInputValue(e.target.value)}
                         onKeyPress={handleKeyPress}
                         placeholder="Ask something..."
-                        className="flex-1 px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                        className="flex-1 border border-black/20 bg-white px-3 py-2 text-sm text-[#171717] outline-none placeholder:text-black/35 focus:border-[#cc0000] focus:ring-1 focus:ring-[#cc0000]"
                     />
                     <button
+                        aria-label="Send message"
                         onClick={handleSendMessage}
-                        className="bg-indigo-600 hover:bg-indigo-700 text-white p-2 rounded-lg transition-colors cursor-pointer"
+                        className="cursor-pointer bg-[#cc0000] p-2 text-white transition-colors hover:bg-[#990000]"
                     >
                         <Send className="w-5 h-5" />
                     </button>
@@ -496,8 +498,9 @@ export default function ChatPopup({
 
             {/* Toggle Button */}
             <button
+                aria-label={isOpen ? "Close course assistant" : "Open course assistant"}
                 onClick={() => setIsOpen(!isOpen)}
-                className="w-14 h-14 rounded-full bg-gradient-to-br from-indigo-600 to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center hover:scale-110 active:scale-95 cursor-pointer"
+                className="flex h-14 w-14 items-center justify-center bg-[#cc0000] text-white shadow-[5px_5px_0_rgba(23,23,23,0.2)] transition-all duration-300 hover:-translate-y-1 hover:bg-[#990000] active:translate-y-0"
             >
                 {isOpen ? (
                     <X className="w-6 h-6" />

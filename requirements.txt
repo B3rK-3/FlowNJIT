@@ -7,3 +7,6 @@ python-dotenv
 requests
 beautifulsoup4
 torch
+fastapi
+uvicorn
+redis

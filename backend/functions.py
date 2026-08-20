@@ -10,7 +10,9 @@ from backend.constants import (
     REDIS_LECTURERS_KEY,
     LECTURER_DATA,
     COURSE_DATA_FILE,
+    LECTURERS_DATA_FILE,
 )
+import os
 from backend.types import (
     CourseQueryFormat,
     CourseMetadata,
@@ -92,6 +94,17 @@ def set_redis_lecturer_data(lecturer_data: LecturerRatingType):
 
 def set_local_data():
     course_data = get_redis_course_data()
+    if not course_data:
+        try:
+            if os.path.exists(COURSE_DATA_FILE):
+                with open(COURSE_DATA_FILE, "r", encoding="utf-8") as f:
+                    course_data = set_redis_course_data(
+                        CourseStructureModel.model_validate(json.load(f)).root
+                    )
+                print("Auto-seeded Redis courses from graph.json")
+        except Exception as e:
+            print("Error auto-seeding Redis courses:", e)
+
     if course_data:
         COURSE_DATA.clear()
         COURSE_DATA.update(course_data)
@@ -101,6 +114,17 @@ def set_local_data():
         print("Warning: Redis course data is empty.")
 
     lecturers_data = get_redis_lecturers_data()
+    if not lecturers_data:
+        try:
+            if os.path.exists(LECTURERS_DATA_FILE):
+                with open(LECTURERS_DATA_FILE, "r", encoding="utf-8") as f:
+                    lecturers_data = set_redis_lecturer_data(
+                        LecturerStructureModel.model_validate(json.load(f)).root
+                    )
+                print("Auto-seeded Redis lecturers from lecturers.json")
+        except Exception as e:
+            print("Error auto-seeding Redis lecturers:", e)
+
     if lecturers_data:
         LECTURER_DATA.clear()
         LECTURER_DATA.update(lecturers_data)

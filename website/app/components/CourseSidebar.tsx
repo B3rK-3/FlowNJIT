@@ -2,7 +2,8 @@
 
 import React, { JSX, useEffect, useState } from "react";
 import SectionsPopover from "./SectionsPopover";
-import { sectionsData } from "../constants";
+import { sectionsData, baseURL } from "../constants";
+import { ChevronDown, ExternalLink, Info } from "lucide-react";
 
 interface CourseSidebarProps {
     currentCourse: string;
@@ -42,10 +43,7 @@ export default function CourseSidebar({
 
             if (instructors.length === 0) return;
 
-            const profURL =
-                process.env.NODE_ENV === "development"
-                    ? "http://localhost:3001/getprofs"
-                    : "https://flownjit.com/getprofs";
+            const profURL = `${baseURL}/getprofs`;
 
             try {
                 const response = await fetch(profURL, {
@@ -89,19 +87,16 @@ export default function CourseSidebar({
         fetchProfessorLinks();
     }, [currentCourse, currentTerm]);
     return (
-        <aside className="w-80 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-100 dark:border-slate-700 shadow-xl absolute rounded-md shadow-xl ml-7 top-28">
-            <div className="p-2 pl-6 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
-                {currentCourse && infoData ? (
-                    <>
-                        <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
-                            {currentCourse}
-                        </h3>
-                    </>
-                ) : (
-                    <div className="text-sm text-slate-500 dark:text-slate-400 mt-2">
-                        Select a course to see details
+        <aside className="absolute left-6 top-6 z-20 w-[calc(100%-3rem)] max-w-sm border border-black/15 bg-white shadow-[8px_8px_0_rgba(23,23,23,0.12)] sm:w-80">
+            <div className="flex items-center justify-between border-b-4 border-[#cc0000] px-4 py-3">
+                <div className="min-w-0">
+                    <div className="text-[9px] font-black uppercase tracking-[0.18em] text-[#cc0000]">
+                        Course details
                     </div>
-                )}
+                    <h3 className="truncate text-lg font-black tracking-tight text-[#171717]">
+                        {currentCourse || "Select a course"}
+                    </h3>
+                </div>
                 <div className="flex items-center gap-1">
                     {currentCourse && (
                         <SectionsPopover
@@ -111,69 +106,72 @@ export default function CourseSidebar({
                         />
                     )}
                     <button
+                        type="button"
+                        aria-label={
+                            isSidebarOpen
+                                ? "Collapse course details"
+                                : "Expand course details"
+                        }
                         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                        className="p-1 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800"
+                        className="grid h-8 w-8 place-items-center border border-black/15 text-[#171717] transition hover:border-[#cc0000] hover:text-[#cc0000]"
                     >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className={`h-5 w-5 text-slate-500 transition-transform ${
+                        <ChevronDown
+                            className={`h-4 w-4 transition-transform ${
                                 isSidebarOpen ? "rotate-180" : ""
                             }`}
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
-                        >
-                            <path
-                                fillRule="evenodd"
-                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                clipRule="evenodd"
-                            />
-                        </svg>
+                        />
                     </button>
                 </div>
             </div>
 
             <div
-                className={`transition-all duration-300 ease-in-out overflow-y-scroll ${
-                    isSidebarOpen ? "max-h-96" : "overflow-hidden max-h-0"
+                className={`overflow-y-auto transition-all duration-300 ${
+                    isSidebarOpen ? "max-h-[360px]" : "max-h-0 overflow-hidden"
                 }`}
             >
-                <div className="p-6 pt-2 space-y-4">
-                    <div className="text-sm text-slate-700 dark:text-slate-300">
-                        <span className="font-semibold text-slate-600 dark:text-slate-400">
-                            Name:
-                        </span>{" "}
-                        {infoData && infoData.title}
+                {currentCourse && infoData ? (
+                    <div className="space-y-5 p-4">
+                        <div>
+                            <div className="mb-1 text-[9px] font-black uppercase tracking-[0.16em] text-[#847e77]">
+                                Catalog title
+                            </div>
+                            <p className="text-sm font-bold leading-snug text-[#272727]">
+                                {infoData.title}
+                            </p>
+                        </div>
+                        <div>
+                            <div className="mb-1 text-[9px] font-black uppercase tracking-[0.16em] text-[#847e77]">
+                                Description
+                            </div>
+                            <p className="text-xs leading-relaxed text-[#5e5953]">
+                                {infoData.desc}
+                            </p>
+                        </div>
+                        <div>
+                            <div className="mb-1 text-[9px] font-black uppercase tracking-[0.16em] text-[#847e77]">
+                                Prerequisites
+                            </div>
+                            <div className="text-xs leading-relaxed text-[#272727]">
+                                {prerequisitesText}
+                            </div>
+                        </div>
+                        <a
+                            href={infoLink}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="flex items-center justify-between border-t border-black/10 pt-3 text-[10px] font-black uppercase tracking-[0.14em] text-[#cc0000] hover:text-[#990000]"
+                        >
+                            Open official catalog
+                            <ExternalLink className="h-3.5 w-3.5" />
+                        </a>
                     </div>
-                    <div className="text-sm text-slate-700 dark:text-slate-300">
-                        <span className="font-semibold text-slate-600 dark:text-slate-400">
-                            Description:
-                        </span>{" "}
-                        {infoData && infoData.desc}
+                ) : (
+                    <div className="flex gap-3 p-4 text-xs leading-relaxed text-[#68635d]">
+                        <Info className="mt-0.5 h-4 w-4 shrink-0 text-[#cc0000]" />
+                        Choose a node in the pathway graph to inspect its
+                        description, prerequisites, and available sections.
                     </div>
-                    <div className="text-sm text-slate-700 dark:text-slate-300">
-                        <span className="font-semibold text-slate-600 dark:text-slate-400">
-                            Link:
-                        </span>{" "}
-                        {currentCourse ? (
-                            <a
-                                href={infoLink}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="text-indigo-600 dark:text-indigo-400 hover:underline"
-                            >
-                                {currentCourse} -&gt;
-                            </a>
-                        ) : (
-                            ""
-                        )}
-                    </div>
-                    <div className="text-sm text-slate-700 dark:text-slate-300">
-                        <span className="font-semibold text-slate-600 dark:text-slate-400">
-                            Prerequisites:
-                        </span>{" "}
-                        {currentCourse ? prerequisitesText : ""}
-                    </div>
-                </div>
+                )}
             </div>
         </aside>
     );

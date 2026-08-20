@@ -35,8 +35,8 @@ const MAX_GRAPH_COURSES = 40;
 const CourseGraph = dynamic(() => import("./CourseGraph"), {
     ssr: false,
     loading: () => (
-        <div className="flex items-center justify-center h-full">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+        <div className="flex h-full items-center justify-center">
+            <div className="h-10 w-10 animate-spin border-2 border-black/15 border-t-[#cc0000]" />
         </div>
     ),
 });
@@ -233,7 +233,7 @@ export default function HomeClient({
         : "";
 
     return (
-        <div className="flex h-dvh bg-gradient-to-br from-slate-50 via-white to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950">
+        <div className="flex min-h-dvh flex-col bg-[#f4f2ee] lg:h-dvh lg:flex-row lg:overflow-hidden">
             <MainSidebar
                 searchQuery={searchQuery}
                 setSearchQuery={handleSearchChange}
@@ -250,75 +250,70 @@ export default function HomeClient({
                 setDisplayOnlyTermCourses={setDisplayOnlyTermCourses}
             />
 
-            {/* Main Content */}
-            <main className="flex-1 flex">
-                <div className="flex-1 flex flex-col">
-                    {/* Header */}
-                    <header className="bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800 px-6 py-4">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <h2 className="text-xl font-semibold text-slate-900 dark:text-white">
-                                    {selectedCourse ||
-                                        selectedDept +
-                                            (selectedDept
-                                                ? " Deparment"
-                                                : "") ||
-                                        "All Courses"}
-                                </h2>
-                                <p className="text-sm text-slate-500 dark:text-slate-400">
-                                    {selectedCourse
-                                        ? `Viewing prerequisites for ${selectedCourse}`
-                                        : displayedCourses.length >
+            <main className="relative flex min-h-[720px] min-w-0 flex-1 flex-col lg:min-h-0">
+                <header className="relative z-10 border-b border-black/10 bg-white px-5 py-4 sm:px-7">
+                    <div className="flex items-center justify-between gap-5">
+                        <div className="min-w-0">
+                            <div className="mb-1 text-[10px] font-black uppercase tracking-[0.2em] text-[#cc0000]">
+                                NJIT course catalog / term {selectedTerm}
+                            </div>
+                            <h2 className="truncate text-2xl font-black uppercase tracking-[-0.035em] text-[#171717] sm:text-3xl">
+                                {selectedCourse ||
+                                    (selectedDept !== "ALL"
+                                        ? `${selectedDept} Department`
+                                        : "All Course Pathways")}
+                            </h2>
+                            <p className="mt-1 max-w-2xl text-xs leading-relaxed text-[#68635d] sm:text-sm">
+                                {selectedCourse
+                                    ? `Tracing the prerequisite path for ${selectedCourse}. Select any node to inspect its catalog details.`
+                                    : displayedCourses.length >
+                                      MAX_GRAPH_COURSES
+                                    ? `Showing the first ${MAX_GRAPH_COURSES} of ${displayedCourses.length} matches. Search or choose a department to narrow the graph.`
+                                    : `${Math.min(
+                                          displayedCourses.length,
                                           MAX_GRAPH_COURSES
-                                        ? `
-                                            Showing the first 
-                                            ${MAX_GRAPH_COURSES} matches to keep
-                                            the graph smooth. Narrow your search
-                                            or pick a course to focus.
-                                        `
-                                        : `Displaying ${Math.min(
-                                              displayedCourses.length,
-                                              MAX_GRAPH_COURSES
-                                          )} courses in graph view`}
-                                </p>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <span className="px-3 py-1 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 text-sm font-medium">
-                                    {Object.keys(_COURSE_DATA).length} courses
-                                </span>
-                            </div>
+                                      )} courses currently mapped.`}
+                            </p>
                         </div>
-                    </header>
-
-                    {/* Graph Container */}
-                    <div className="flex-1 p-4" ref={graphContainerRef}>
-                        <div className="w-full h-full rounded-2xl overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-800">
-                            <CourseGraph
-                                graphData={_COURSE_DATA}
-                                selectedCourse={selectedCourse || undefined}
-                                infoCourse={currentCourse}
-                                visibleCourses={graphCourses}
-                                onCourseSelect={(course) => {
-                                    // setSelectedCourse(course);
-                                    setCurrentCourse(course);
-                                }}
-                            />
+                        <div className="hidden shrink-0 items-stretch sm:flex">
+                            <div className="border-l-4 border-[#cc0000] bg-[#f4f2ee] px-4 py-2">
+                                <div className="text-xl font-black leading-none text-[#171717]">
+                                    {Object.keys(_COURSE_DATA).length}
+                                </div>
+                                <div className="mt-1 text-[9px] font-bold uppercase tracking-[0.15em] text-[#77716a]">
+                                    Courses indexed
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </header>
 
-                <CourseSidebar
-                    currentCourse={currentCourse}
-                    infoData={infoData}
-                    isSidebarOpen={isSidebarOpen}
-                    setIsSidebarOpen={setIsSidebarOpen}
-                    prerequisitesText={prerequisitesText}
-                    infoLink={infoLink}
-                    currentTerm={selectedTerm}
-                />
+                <div
+                    className="relative min-h-[560px] flex-1 p-3 sm:p-5"
+                    ref={graphContainerRef}
+                >
+                    <div className="h-full min-h-[540px] w-full overflow-hidden border border-black/15 bg-white shadow-[0_12px_36px_rgba(23,23,23,0.08)]">
+                        <CourseGraph
+                            graphData={_COURSE_DATA}
+                            selectedCourse={selectedCourse || undefined}
+                            infoCourse={currentCourse}
+                            visibleCourses={graphCourses}
+                            onCourseSelect={setCurrentCourse}
+                        />
+                    </div>
+
+                    <CourseSidebar
+                        currentCourse={currentCourse}
+                        infoData={infoData}
+                        isSidebarOpen={isSidebarOpen}
+                        setIsSidebarOpen={setIsSidebarOpen}
+                        prerequisitesText={prerequisitesText}
+                        infoLink={infoLink}
+                        currentTerm={selectedTerm}
+                    />
+                </div>
             </main>
 
-            {/* Chat Popup */}
             <ChatPopup
                 setSearchQuery={handleSearchChange}
                 maxWidth={graphDimensions.width}

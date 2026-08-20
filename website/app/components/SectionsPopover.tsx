@@ -146,7 +146,7 @@ export default function SectionsPopover({
                 href={profData.link}
                 target="_blank"
                 rel="noreferrer"
-                className="text-indigo-600 dark:text-indigo-400 hover:underline"
+                className="font-bold text-[#cc0000] hover:underline"
             >
                 {displayName}
             </a>
@@ -158,7 +158,7 @@ export default function SectionsPopover({
             <button
                 ref={buttonRef}
                 onClick={() => setIsOpen(!isOpen)}
-                className="p-1 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-colors"
+                className="p-1 text-[#171717] transition-colors hover:bg-[#fff1f1] hover:text-[#cc0000]"
                 title="View sections"
             >
                 <svg
@@ -180,16 +180,15 @@ export default function SectionsPopover({
             {isOpen && (
                 <div
                     ref={popoverRef}
-                    className="absolute left-0 mt-2 w-[800px] max-h-[600px] bg-white dark:bg-slate-800 rounded-lg shadow-2xl border border-slate-200 dark:border-slate-700 z-50 overflow-hidden animate-rollout"
+                    className="fixed left-1/2 top-1/2 z-50 max-h-[min(600px,calc(100vh-2rem))] w-[min(900px,calc(100vw-2rem))] -translate-x-1/2 -translate-y-1/2 overflow-hidden border border-black/20 bg-white shadow-2xl"
                 >
-                    <div className="p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
-                        <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
-                            {courseName}
-                        </h3>
-                        <p className="text-sm text-slate-600 dark:text-slate-400">
-                            {courseTitle}
-                        </p>
-                        <p className="text-xs text-slate-500 dark:text-slate-500 mt-1">
+                    <div className="border-b-4 border-[#cc0000] bg-[#171717] p-4 text-white">
+                        <div className="text-[9px] font-black uppercase tracking-[0.18em] text-[#ef2b2d]">
+                            Available sections
+                        </div>
+                        <h3 className="text-lg font-black">{courseName}</h3>
+                        <p className="text-sm text-white/70">{courseTitle}</p>
+                        <p className="mt-1 text-xs text-white/45">
                             {sections.length} section
                             {sections.length !== 1 ? "s" : ""} available
                         </p>
@@ -197,7 +196,7 @@ export default function SectionsPopover({
 
                     <div className="overflow-auto max-h-[500px]">
                         <table className="w-full text-sm text-center">
-                            <thead className="bg-slate-100 dark:bg-slate-900 sticky top-0">
+                            <thead className="sticky top-0 bg-[#f4f2ee]">
                                 <tr>
                                     <th className="px-3 py-2 font-semibold text-slate-700 dark:text-slate-300">
                                         Section
@@ -229,7 +228,7 @@ export default function SectionsPopover({
                                 {sections.map((section, idx) => (
                                     <tr
                                         key={idx}
-                                        className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
+                                        className="transition-colors hover:bg-[#fff1f1]"
                                     >
                                         <td className="px-3 py-2 text-slate-900 dark:text-white font-medium">
                                             {section.section}
