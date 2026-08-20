@@ -144,8 +144,9 @@ python -c 'import backend.scrapers.constants'
 redis-cli EXISTS courses lecturers
 ```
 
-The final command should report that both keys exist. (Note: `backend/server.py` will also auto-seed Redis on startup if it is empty).
+The final command should report that both keys exist (`1 1` or integer count).
 
+> **Note on `MAINT_NOTIFICATIONS` log**: If you see `DEBUG: Failed to enable maintenance notifications: unknown subcommand 'MAINT_NOTIFICATIONS'`, this is a harmless informational message from `redis-py` testing if the Redis server supports Redis 7.4+ client maintenance notifications. Standard Linux/PRoot Redis packages (Redis 6.x or 7.0/7.2) do not have this subcommand; Redis and the backend continue to operate normally.
 ### 6. Verify startup configuration
 
 `backend/server.py` startup handler executes:
@@ -197,25 +198,89 @@ Use a named tunnel for a stable hostname. Keep FastAPI bound to loopback when on
 
 Before connecting the website to the tunnel, update the production backend URL and CORS settings described above.
 
-## Android reliability settings
+## Preventing Android from killing background processes
 
-On either phone:
+Android aggressively terminates background processes to conserve battery and RAM. Configure these layers to keep the server running reliably:
 
-1. Disable battery optimization for Termux.
-2. Remove Termux from sleeping/deep-sleeping application lists.
-3. Run this in the outer Termux session before entering Ubuntu:
+### 1. Termux Wake Lock & Foreground Service
 
-   ```bash
-   termux-wake-lock
-   ```
+In the outer Termux app (before entering Ubuntu PRoot), execute:
 
-4. Keep Wi-Fi enabled while the screen is off.
-5. Use a charge limit/battery-protection feature if the phone remains plugged in.
-6. Keep the phone ventilated and out of direct sunlight.
-7. Expect Android updates, reboots, network changes, or memory pressure to interrupt service.
+```bash
+termux-wake-lock
+```
 
-A wake lock reduces ordinary suspension but does not guarantee that Android or the manufacturer's memory manager will never terminate Termux.
+Ensure the persistent Termux notification remains visible in the Android notification shade. This acquires an Android `PARTIAL_WAKE_LOCK` preventing the CPU from sleeping when the screen turns off.
 
+### 2. Disable Battery Optimization & Sleep Limits
+
+#### Standard Android / AOSP
+1. **Settings → Apps → Termux → Battery**: Set to **Unrestricted** (turn off "Optimize battery usage").
+2. **Settings → Apps → Termux → Mobile data**: Enable **Allow background data usage** and **Allow data usage while Data saver is on**.
+
+#### Samsung Galaxy (One UI)
+1. **Settings → Battery → Background usage limits → Never sleeping apps**: Add **Termux**.
+2. **Settings → Battery → Background usage limits**: Turn off **Put unused apps to sleep**.
+3. **Settings → Device Care → Memory → Excluded apps**: Add **Termux**.
+4. In the **App Switcher / Recents screen**: Tap the Termux app icon at the top of its tile and select **Keep open** (shows a lock icon).
+
+#### Xiaomi / Redmi (MIUI / HyperOS)
+1. **Settings → Apps → Manage Apps → Termux**:
+   - Turn on **Autostart**.
+   - In **Battery Saver**, select **No restrictions**.
+2. **Security app → Boost speed → Settings gear (top right) → Lock apps**: Enable **Termux**.
+3. In **Recents screen**: Long-press the Termux window and tap the **Padlock icon**.
+4. In **Security → Battery → Settings gear → Clear cache when device is locked**: Set to **Never**.
+
+### 3. Disable Android 12+ "Phantom Process Killer" (PPK)
+
+Starting with Android 12, Android's `ActivityManager` kills child processes spawned by apps (including PRoot, Python, Redis, and Cloudflared) if they consume too much background CPU or exceed 32 child processes.
+
+To disable PPK:
+
+**Via ADB (from a connected computer):**
+```bash
+adb shell "/system/bin/device_config put activity_manager max_phantom_processes 2147483647"
+adb shell "/system/bin/device_config set_sync_disabled_for_tests persistent"
+```
+
+**On-device via Shizuku / `rish`:**
+```bash
+rish -c "/system/bin/device_config put activity_manager max_phantom_processes 2147483647"
+rish -c "/system/bin/device_config set_sync_disabled_for_tests persistent"
+```
+
+**On Android 13/14+ Developer Options (if available on your ROM):**
+Enable **Settings → Developer Options → Disable child process restrictions**.
+
+### 4. Guard against Low-Memory Killer (LMK)
+
+PyTorch, SentenceTransformers, and ChromaDB require substantial memory (~1.5 GB to 3.5 GB peak). When physical RAM is exhausted, the Linux kernel `lmkd` kills the largest process with `SIGKILL` (exit code 137).
+
+1. **Single worker only**: Run with `python -m backend.server` (1 worker). Do not run multiple Uvicorn workers.
+2. **Close background apps**: Clear heavy apps (camera, games, heavy browser sessions) from RAM.
+3. **Keep plugged in**: Android's power manager is significantly more forgiving while charging.
+4. **Keep screen awake while charging (Optional)**: Enable **Settings → Developer Options → Stay awake**.
+
+### 5. Run inside `tmux` with an Auto-Restart Loop
+
+Inside Ubuntu PRoot, use `tmux` so session detachment doesn't kill the server, and wrap the startup in a loop to recover automatically from transient interruptions:
+
+```bash
+apt install tmux
+tmux new -s flownjit
+```
+
+Inside tmux:
+```bash
+while true; do
+  python -m backend.server
+  echo "Server stopped with exit code $?. Restarting in 3s..."
+  sleep 3
+done
+```
+
+Detach cleanly from tmux by pressing `Ctrl + B`, then `D`. Re-attach anytime with `tmux attach -t flownjit`.
 ## Redmi Note 9S assessment
 
 The Redmi Note 9S uses a Snapdragon 720G with two Cortex-A76-derived performance cores and six Cortex-A55-derived efficiency cores. It was sold primarily with 4 GB or 6 GB RAM. It is ARM64, so the same Ubuntu ARM64 wheels are relevant; architecture is not the main problem.

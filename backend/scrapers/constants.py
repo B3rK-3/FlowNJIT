@@ -11,17 +11,19 @@ import logging
 import json
 
 os.makedirs(LOGS_DIR, exist_ok=True)
-logging.root.handlers = []
-logging.basicConfig(
-    format="%(asctime)s - %(levelname)s: %(message)s",
-    datefmt="%m/%d/%Y %I:%M:%S %p",
-    level=logging.DEBUG,
-    handlers=[
-        logging.FileHandler(os.path.join(LOGS_DIR, "scrapers.log"),),
-        logging.StreamHandler()
-    ]
-)
 logger = logging.getLogger("scrapers")
+logger.setLevel(logging.DEBUG)
+if not logger.handlers:
+    formatter = logging.Formatter(
+        "%(asctime)s - %(levelname)s: %(message)s",
+        datefmt="%m/%d/%Y %I:%M:%S %p",
+    )
+    file_handler = logging.FileHandler(os.path.join(LOGS_DIR, "scrapers.log"))
+    file_handler.setFormatter(formatter)
+    stream_handler = logging.StreamHandler()
+    stream_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
+    logger.addHandler(stream_handler)
 
 BASE_SCRAPER_DIR = os.path.dirname(os.path.abspath(__file__))
 TERM_FILE_PATH = os.path.join(BASE_SCRAPER_DIR, "currentTerm.txt")
