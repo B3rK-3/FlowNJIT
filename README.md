@@ -92,15 +92,40 @@ A comprehensive course prerequisite visualization and planning tool for New Jers
     python -m backend
     ```
 
+### One-Command Quick Start (Full Stack)
+
+`./start.sh` starts Redis, the FastAPI backend, the recurring scraper worker, and the Next.js frontend:
+
+```bash
+./start.sh
+```
+
+Production frontend:
+
+```bash
+./start.sh --prod
+```
+
+Skip the scraper worker when only the web application is needed:
+
+```bash
+./start.sh --no-scrapers
+```
+
 ## Background Operations
 
 ### Data Scrapers
 
-The backend automatically starts background scrapers upon initialization:
+The unified startup script runs `python -m backend.scrapers` as a separate managed process:
 
--   **Course Scraper**: Periodically crawls the NJIT catalog and registration systems, updating the local JSON and Redis cache.
--   **Lectorer Scraper**: Periodically refreshes professor ratings from a proxy API, ensuring current student feedback is always available.
--   **Logging**: All background activities are logged to `backend/logs/scrapers.log` for easy monitoring.
+-   **Course Scraper**: Refreshes sections for the term in `backend/scrapers/currentTerm.txt` every five minutes.
+-   **Lecturer Scraper**: Refreshes RateMyProfessors data every six hours.
+-   **Logging**: Writes scraper activity to `backend/logs/scrapers.log`.
+-   **Standalone worker**: Run only Redis and the scrapers with `./start.sh --scrapers-only`.
+-   **Live API refresh**: The backend subscribes to Redis updates and reloads in-memory course/lecturer data. Five-minute section-only updates do not scan Chroma; Chroma synchronizes only when a course ID, title, or description changes.
+-   **Daily JSON snapshots**: Redis remains current after every scrape, while `graph.json` and `lecturers.json` are atomically rewritten at most once every 24 hours. Override with `JSON_SNAPSHOT_INTERVAL_SECONDS`.
+
+ChromaDB and the transformer models are loaded inside the FastAPI process; they are not separate services. Cloudflare Tunnel is optional and starts only with `./start.sh --tunnel`.
 
 ### Manual Scraper Execution
 

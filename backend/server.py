@@ -1,7 +1,7 @@
 from backend.types import CourseDataType
-from backend.constants import COURSE_DATA
+from backend import constants
+from backend.constants import COURSE_DATA, LECTURER_DATA
 from backend.functions import construct_term_courses
-from backend.constants import LECTURER_DATA
 from backend.functions import (
     initialize_database,
     set_local_data,
@@ -19,8 +19,9 @@ from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import StreamingResponse
 import uvicorn
 import json
+import logging
 import os
-
+import threading
 
 app = FastAPI()
 
@@ -53,6 +54,34 @@ app.add_middleware(
 app.add_middleware(GZipMiddleware, minimum_size=500, compresslevel=5)
 
 
+logger = logging.getLogger(__name__)
+update_listener_stop = threading.Event()
+
+
+def listen_for_scraper_updates():
+    pubsub = constants.get_redis().pubsub()
+    pubsub.subscribe("course_updates", "lecturer_updates")
+    try:
+        while not update_listener_stop.is_set():
+            message = pubsub.get_message(ignore_subscribe_messages=True, timeout=1.0)
+            if not message:
+                continue
+
+            channel = message["channel"]
+            update_kind = message["data"]
+            try:
+                set_local_data()
+                if channel == "course_updates":
+                    construct_term_courses()
+                    if update_kind == "catalog":
+                        initialize_database()
+                logger.info("Applied %s update from %s", update_kind, channel)
+            except Exception:
+                logger.exception("Failed to apply %s update from %s", update_kind, channel)
+    finally:
+        pubsub.close()
+
+
 @app.on_event("startup")
 def startup():
     from backend.constants import warmup_constants
@@ -62,7 +91,32 @@ def startup():
     set_local_data()
     construct_term_courses()
     initialize_database()
+    update_listener_stop.clear()
+    threading.Thread(
+        target=listen_for_scraper_updates,
+        name="scraper-update-listener",
+        daemon=True,
+    ).start()
 
+
+@app.on_event("shutdown")
+def shutdown():
+    update_listener_stop.set()
+
+
+@app.get("/")
+async def root():
+    return {
+        "status": "ok",
+        "message": "FlowNJIT Backend API is running",
+        "docs": "/docs",
+        "endpoints": ["/getcourses", "/getprofs", "/chat", "/docs", "/redoc"],
+    }
+
+
+@app.get("/health")
+async def health_check():
+    return {"status": "ok"}
 @app.post("/chat")
 async def chat_endpoint(request: ChatRequest):
     async def generate():

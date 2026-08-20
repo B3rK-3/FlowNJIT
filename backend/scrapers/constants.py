@@ -9,6 +9,7 @@ from backend.types import CourseStructureModel, LecturerStructureModel
 import os
 import logging
 import json
+import time
 
 os.makedirs(LOGS_DIR, exist_ok=True)
 logger = logging.getLogger("scrapers")
@@ -24,6 +25,27 @@ if not logger.handlers:
     stream_handler.setFormatter(formatter)
     logger.addHandler(file_handler)
     logger.addHandler(stream_handler)
+
+JSON_SNAPSHOT_INTERVAL_SECONDS = int(
+    os.getenv("JSON_SNAPSHOT_INTERVAL_SECONDS", str(24 * 60 * 60))
+)
+
+
+def write_json_snapshot_if_due(data_factory, path: str, force: bool = False) -> bool:
+    if (
+        not force
+        and os.path.exists(path)
+        and time.time() - os.path.getmtime(path) < JSON_SNAPSHOT_INTERVAL_SECONDS
+    ):
+        return False
+
+    data = data_factory()
+    temporary_path = f"{path}.tmp"
+    with open(temporary_path, "w", encoding="utf-8") as file:
+        json.dump(data, file, indent=4)
+    os.replace(temporary_path, path)
+    return True
+
 
 BASE_SCRAPER_DIR = os.path.dirname(os.path.abspath(__file__))
 TERM_FILE_PATH = os.path.join(BASE_SCRAPER_DIR, "currentTerm.txt")

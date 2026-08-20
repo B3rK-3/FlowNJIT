@@ -16,11 +16,10 @@ from backend.scrapers.constants import (
     logger,
     COURSE_DATA,
     set_redis_course_data,
-    CourseStructureModel,
+    write_json_snapshot_if_due,
 )
-from backend.types import CourseInfoModel
+from backend.types import CourseInfoModel, CourseStructureModel
 from backend.constants import COURSE_DATA_FILE
-from backend.types import CourseInfoModel
 
 dotenv.load_dotenv()
 
@@ -548,12 +547,17 @@ def scrape_courses(
         run_parser(scraped_data, term)
         logger.info("Section scraping and parsing complete.")
 
-    # Save to JSON and Redis
+    # Redis stays current after every scrape; the JSON fallback is snapshotted daily.
     if run_catalog or run_sections:
         set_redis_course_data(COURSE_DATA)
-        # for now update the file too
-        with open(COURSE_DATA_FILE, "w") as f:
-            json.dump(CourseStructureModel(COURSE_DATA).model_dump(), f, indent=4)
+        output_path = output_file or COURSE_DATA_FILE
+        snapshot_written = write_json_snapshot_if_due(
+            lambda: CourseStructureModel(COURSE_DATA).model_dump(),
+            output_path,
+            force=output_file is not None,
+        )
+        if snapshot_written:
+            logger.info("Wrote course JSON snapshot to %s", output_path)
     else:
         logger.warning(
             "No action performed. Use catalog=True, sections=True, or both=False to run."
@@ -579,8 +583,8 @@ def main():
     parser.add_argument(
         "--output",
         type=str,
-        default=COURSE_DATA_FILE,
-        help="Path to the output JSON file.",
+        default=None,
+        help="Force a JSON snapshot to this path (scheduled snapshots default to once daily).",
     )
     parser.add_argument(
         "--catalog",

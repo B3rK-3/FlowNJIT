@@ -159,22 +159,43 @@ initialize_database()
 ```
 
 The model warmup downloads and loads transformer models on first run. Loading Redis before `initialize_database()` ensures Chroma sees the catalog.
-### 7. Start the backend
+### 7. Start the application
 
-For access only from the phone and a Cloudflare Tunnel running on the same phone:
-
-```bash
-python -m backend.server
-```
-
-The built-in `start()` binds to `127.0.0.1:3001`.
-
-For direct access from another device on the same Wi-Fi network:
+The default command starts the full stack: Redis, FastAPI, the course/lecturer scraper worker, and Next.js:
 
 ```bash
-uvicorn backend.server:app --host 0.0.0.0 --port 3001
+./start.sh
 ```
 
+Production frontend:
+
+```bash
+./start.sh --prod
+```
+
+The scraper worker runs separately as `python -m backend.scrapers`. It refreshes course sections every five minutes and professor ratings every six hours. Its logs are in `backend/logs/scrapers.log`. The backend listens for Redis notifications and reloads its in-memory data. Section-only updates do not rescan ChromaDB; Chroma synchronizes only when a course ID, title, or description changes. Before starting, set the desired course term in `backend/scrapers/currentTerm.txt`.
+
+Redis is updated after every scrape, but the large checked-in JSON fallbacks are snapshotted at most once every 24 hours to reduce phone-storage writes. The interval uses each JSON file's modification time and can be configured in `backend/.env`:
+
+```env
+JSON_SNAPSHOT_INTERVAL_SECONDS=86400
+```
+
+If Redis is lost before the next snapshot, the JSON fallback can be up to one day behind.
+
+Useful alternatives:
+
+```bash
+./start.sh --no-scrapers   # Redis + backend + frontend
+./start.sh --backend-only  # Redis + backend
+./start.sh --scrapers-only # Redis + scraper worker
+```
+
+ChromaDB and both transformer models run inside the FastAPI backend process; they do not need separate startup commands. Cloudflare Tunnel remains optional (`./start.sh --tunnel`). If automatic LAN detection is wrong inside PRoot, pass the phone address explicitly:
+
+```bash
+LAN_IP=192.168.1.50 ./start.sh
+```
 Test it on the phone before exposing it:
 
 ```bash

@@ -1,5 +1,4 @@
 import sys
-import json
 import requests
 import time
 from functools import cache
@@ -9,10 +8,10 @@ from backend.scrapers.constants import (
     COURSE_DATA,
     LECTURER_DATA,
     set_redis_lecturer_data,
-    LecturerStructureModel,
+    write_json_snapshot_if_due,
 )
 from backend.constants import LECTURERS_DATA_FILE
-from backend.types import LecturerRating
+from backend.types import LecturerRating, LecturerStructureModel
 
 
 def sync_lecturer_rating(lecturer_name: str, existing_data: LecturerRating | None):
@@ -98,10 +97,11 @@ def check_all_lecturers():
             logger.info(f"Processed {i + 1}/{len(lecturers_list)} lecturers...")
 
     set_redis_lecturer_data(LECTURER_DATA)
-
-    # for now update the file too
-    with open(LECTURERS_DATA_FILE, "w") as f:
-        json.dump(LecturerStructureModel(LECTURER_DATA).model_dump(), f, indent=4)
+    if write_json_snapshot_if_due(
+        lambda: LecturerStructureModel(LECTURER_DATA).model_dump(),
+        LECTURERS_DATA_FILE,
+    ):
+        logger.info("Wrote lecturer JSON snapshot to %s", LECTURERS_DATA_FILE)
 
 
 if __name__ == "__main__":

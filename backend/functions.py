@@ -45,12 +45,10 @@ import io
 
 
 def construct_term_courses():
+    term_courses.clear()
     for course, course_info in COURSE_DATA.items():
         for term in course_info.sections.keys():
-            if term not in term_courses:
-                term_courses[term] = list()
-            else:
-                term_courses[term].append(course)
+            term_courses.setdefault(term, []).append(course)
 
 
 def get_redis_lecturers_data():

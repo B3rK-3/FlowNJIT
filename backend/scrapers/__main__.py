@@ -1,3 +1,4 @@
+import hashlib
 import os
 import threading
 import time
@@ -13,6 +14,16 @@ from backend.scrapers.constants import (
 
 
 
+def semantic_catalog_fingerprint() -> str:
+    digest = hashlib.sha256()
+    for course_id in sorted(COURSE_DATA):
+        course = COURSE_DATA[course_id]
+        for value in (course_id, course.title or "", course.desc or ""):
+            digest.update(value.encode("utf-8"))
+            digest.update(b"\0")
+    return digest.hexdigest()
+
+
 def run_course_scraper():
     print('starting course scraper')
     while True:
@@ -26,8 +37,14 @@ def run_course_scraper():
 
                 if term:
                     logger.info(f"--- Starting course scrape for term: {term} ---")
+                    previous_catalog = semantic_catalog_fingerprint()
                     scrape_courses(term, sections=True)
-                    REDIS.publish("course_updates", "refresh")
+                    update_kind = (
+                        "catalog"
+                        if semantic_catalog_fingerprint() != previous_catalog
+                        else "sections"
+                    )
+                    REDIS.publish("course_updates", update_kind)
                     logger.info(
                         "--- Course scrape finished. Sleeping for 5 minutes. ---"
                     )
