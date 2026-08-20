@@ -26,15 +26,30 @@ WEBSITE_DIR="${ROOT_DIR}/website"
 LOGS_DIR="${ROOT_DIR}/backend/logs"
 mkdir -p "$LOGS_DIR"
 
-# Load backend .env if present
-if [ -f "${ROOT_DIR}/backend/.env" ]; then
-    set -a
-    source "${ROOT_DIR}/backend/.env"
-    set +a
-fi
+# Read only the two Cloudflare values; never execute backend/.env as shell code.
+read_env_value() {
+    local key="$1"
+    local file="$2"
+    local line
+    while IFS= read -r line || [ -n "$line" ]; do
+        line="${line%$'\r'}"
+        case "$line" in
+            "${key}="*)
+                printf '%s' "${line#*=}"
+                return 0
+                ;;
+        esac
+    done < "$file"
+}
 
-TUNNEL_TOKEN="${CLOUDFLARE_TUNNEL_TOKEN:-$TUNNEL_TOKEN}"
-TUNNEL_NAME="${CLOUDFLARE_TUNNEL_NAME:-$TUNNEL_NAME}"
+ENV_FILE="${ROOT_DIR}/backend/.env"
+if [ -f "$ENV_FILE" ]; then
+    TUNNEL_TOKEN="${CLOUDFLARE_TUNNEL_TOKEN:-$(read_env_value CLOUDFLARE_TUNNEL_TOKEN "$ENV_FILE")}"
+    TUNNEL_NAME="${CLOUDFLARE_TUNNEL_NAME:-$(read_env_value CLOUDFLARE_TUNNEL_NAME "$ENV_FILE")}"
+else
+    TUNNEL_TOKEN="${CLOUDFLARE_TUNNEL_TOKEN:-$TUNNEL_TOKEN}"
+    TUNNEL_NAME="${CLOUDFLARE_TUNNEL_NAME:-$TUNNEL_NAME}"
+fi
 
 # PIDs to manage
 BACKEND_PID=""
@@ -211,16 +226,25 @@ if [ "$START_BACKEND" = true ]; then
     python3 -m uvicorn backend.server:app --host "$HOST" --port "$BACKEND_PORT" &
     BACKEND_PID=$!
     
-    # Wait for backend health check
+    # Model download and Chroma initialization can be slow on a phone.
     echo "Waiting for backend API to initialize..."
-    for i in {1..30}; do
-        if curl -s -f "http://127.0.0.1:${BACKEND_PORT}/health" >/dev/null 2>&1 || \
-           curl -s -f "http://127.0.0.1:${BACKEND_PORT}/" >/dev/null 2>&1; then
-            echo -e "${GREEN}✓ Backend API is ready!${NC}"
+    BACKEND_READY=false
+    for ((i = 0; i < ${BACKEND_STARTUP_TIMEOUT:-900}; i++)); do
+        if ! kill -0 "$BACKEND_PID" 2>/dev/null; then
+            echo -e "${RED}✗ Backend exited during startup.${NC}"
+            exit 1
+        fi
+        if curl -s -f "http://127.0.0.1:${BACKEND_PORT}/health" >/dev/null 2>&1; then
+            BACKEND_READY=true
             break
         fi
         sleep 1
     done
+    if [ "$BACKEND_READY" != true ]; then
+        echo -e "${RED}✗ Backend did not become ready before the timeout.${NC}"
+        exit 1
+    fi
+    echo -e "${GREEN}✓ Backend API is ready!${NC}"
 fi
 
 # 3. Background Scrapers
@@ -242,13 +266,14 @@ if [ "$START_FRONTEND" = true ]; then
     echo -e "\n${YELLOW}[4/4] Starting Next.js frontend on ${HOST}:${FRONTEND_PORT} (mode: ${MODE})...${NC}"
     cd "$WEBSITE_DIR"
 
-    # Set NEXT_PUBLIC_BACKEND_URL for the frontend if connecting locally/over LAN
-    export NEXT_PUBLIC_BACKEND_URL="${NEXT_PUBLIC_BACKEND_URL:-http://${LAN_IP}:${BACKEND_PORT}}"
+    # Browser requests use Next.js's same-origin /api/backend proxy. Server-side
+    # rendering reaches FastAPI directly over loopback.
+    export BACKEND_INTERNAL_URL="${BACKEND_INTERNAL_URL:-http://127.0.0.1:${BACKEND_PORT}}"
     export PORT="${FRONTEND_PORT}"
     export HOSTNAME="${HOST}"
 
     if [ "$MODE" = "prod" ]; then
-        echo "Building production bundle with NEXT_PUBLIC_BACKEND_URL=${NEXT_PUBLIC_BACKEND_URL}..."
+        echo "Building production bundle..."
         npm run build
         npm run start -- -p "$FRONTEND_PORT" -H "$HOST" &
         FRONTEND_PID=$!
@@ -256,6 +281,24 @@ if [ "$START_FRONTEND" = true ]; then
         npm run dev -- -p "$FRONTEND_PORT" -H "$HOST" &
         FRONTEND_PID=$!
     fi
+
+    FRONTEND_READY=false
+    for ((i = 0; i < ${FRONTEND_STARTUP_TIMEOUT:-120}; i++)); do
+        if ! kill -0 "$FRONTEND_PID" 2>/dev/null; then
+            echo -e "${RED}✗ Frontend exited during startup.${NC}"
+            exit 1
+        fi
+        if curl -s -f "http://127.0.0.1:${FRONTEND_PORT}/" >/dev/null 2>&1; then
+            FRONTEND_READY=true
+            break
+        fi
+        sleep 1
+    done
+    if [ "$FRONTEND_READY" != true ]; then
+        echo -e "${RED}✗ Frontend did not become ready before the timeout.${NC}"
+        exit 1
+    fi
+    echo -e "${GREEN}✓ Frontend is ready!${NC}"
 fi
 
 # 5. Optional Cloudflare Tunnel
@@ -270,32 +313,45 @@ if [ "$START_TUNNEL" = true ]; then
             echo -e "Launching Cloudflare Zero Trust Tunnel via Dashboard Token..."
             cloudflared tunnel --no-autoupdate run --token "$TUNNEL_TOKEN" > "$TUNNEL_LOG" 2>&1 &
             TUNNEL_PID=$!
-            TUNNEL_URL="(Managed via Cloudflare Dashboard)"
+            TUNNEL_URL="Managed in Cloudflare Zero Trust"
         elif [ -n "$TUNNEL_NAME" ]; then
             echo -e "Launching Cloudflare Named Tunnel: $TUNNEL_NAME..."
             cloudflared tunnel --no-autoupdate run "$TUNNEL_NAME" > "$TUNNEL_LOG" 2>&1 &
             TUNNEL_PID=$!
-            TUNNEL_URL="(Named tunnel: $TUNNEL_NAME)"
+            TUNNEL_URL="Named tunnel: $TUNNEL_NAME"
         else
             echo -e "Launching Cloudflare Quick Tunnel for http://127.0.0.1:${FRONTEND_PORT}..."
             cloudflared tunnel --no-autoupdate --url "http://127.0.0.1:${FRONTEND_PORT}" > "$TUNNEL_LOG" 2>&1 &
             TUNNEL_PID=$!
-            
-            # Wait up to 10s for quick tunnel URL to appear in log
-            for i in {1..10}; do
+        fi
+
+        TUNNEL_CONNECTED=false
+        for i in {1..30}; do
+            if ! kill -0 "$TUNNEL_PID" 2>/dev/null; then
+                break
+            fi
+            if [ -z "$TUNNEL_TOKEN" ] && [ -z "$TUNNEL_NAME" ]; then
                 QUICK_URL=$(grep -o 'https://[-a-zA-Z0-9]*\.trycloudflare\.com' "$TUNNEL_LOG" | head -n1 || true)
                 if [ -n "$QUICK_URL" ]; then
                     TUNNEL_URL="$QUICK_URL"
-                    break
                 fi
-                sleep 1
-            done
-        fi
-        
-        if [[ -n "$TUNNEL_PID" ]] && kill -0 "$TUNNEL_PID" 2>/dev/null; then
-            echo -e "${GREEN}✓ Cloudflare tunnel connected!${NC}"
+            fi
+            if grep -Eq 'Registered tunnel connection|Connection .* registered' "$TUNNEL_LOG"; then
+                TUNNEL_CONNECTED=true
+                break
+            fi
+            sleep 1
+        done
+
+        if ! kill -0 "$TUNNEL_PID" 2>/dev/null; then
+            echo -e "${RED}✗ Cloudflare tunnel exited during startup:${NC}"
+            tail -n 20 "$TUNNEL_LOG"
+            exit 1
+        elif [ "$TUNNEL_CONNECTED" = true ]; then
+            echo -e "${GREEN}✓ Cloudflare tunnel registered a connection.${NC}"
         else
-            echo -e "${RED}✗ Cloudflare tunnel failed to start. Check backend/logs/tunnel.log${NC}"
+            echo -e "${YELLOW}! cloudflared is running, but registration was not confirmed within 30 seconds.${NC}"
+            echo -e "${YELLOW}  Inspect ${TUNNEL_LOG}${NC}"
         fi
     else
         echo -e "${RED}✗ cloudflared binary is not found in PATH.${NC}"

@@ -6,12 +6,15 @@ import {
 } from "cookies-next";
 import { v4 as uuidv4 } from "uuid";
 
+const configuredBackendURL =
+    process.env.NEXT_PUBLIC_BACKEND_URL || process.env.NEXT_PUBLIC_API_URL;
+
 export const baseURL =
-    process.env.NEXT_PUBLIC_BACKEND_URL ||
-    process.env.NEXT_PUBLIC_API_URL ||
-    (process.env.NODE_ENV === "development"
-        ? "http://localhost:3001"
-        : "https://flownjit.com");
+    typeof window === "undefined"
+        ? process.env.BACKEND_INTERNAL_URL ||
+          configuredBackendURL ||
+          "http://127.0.0.1:3001"
+        : configuredBackendURL || "/api/backend";
 export let _COURSE_DATA: CourseStructure = {};
 
 let sessionUUID: string = "";
