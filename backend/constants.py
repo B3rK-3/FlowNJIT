@@ -62,9 +62,23 @@ def get_ef():
     if _ef is None:
         from chromadb.utils import embedding_functions
 
-        _ef = embedding_functions.SentenceTransformerEmbeddingFunction(
-            model_name="all-MiniLM-L6-v2", device=get_device()
-        )
+        model_name = "all-MiniLM-L6-v2"
+        try:
+            _ef = embedding_functions.SentenceTransformerEmbeddingFunction(
+                model_name=model_name,
+                device=get_device(),
+                local_files_only=True,
+            )
+        except OSError:
+            print(
+                f"{model_name} is not in the local Hugging Face cache; "
+                "downloading it once..."
+            )
+            _ef = embedding_functions.SentenceTransformerEmbeddingFunction(
+                model_name=model_name,
+                device=get_device(),
+                local_files_only=False,
+            )
     return _ef
 
 
@@ -73,9 +87,23 @@ def get_cross_encoder():
     if _CROSS_ENCODER is None:
         from sentence_transformers import CrossEncoder
 
-        _CROSS_ENCODER = CrossEncoder(
-            "cross-encoder/ms-marco-MiniLM-L-6-v2", device=get_device()
-        )
+        model_name = "cross-encoder/ms-marco-MiniLM-L-6-v2"
+        try:
+            _CROSS_ENCODER = CrossEncoder(
+                model_name,
+                device=get_device(),
+                local_files_only=True,
+            )
+        except OSError:
+            print(
+                f"{model_name} is not in the local Hugging Face cache; "
+                "downloading it once..."
+            )
+            _CROSS_ENCODER = CrossEncoder(
+                model_name,
+                device=get_device(),
+                local_files_only=False,
+            )
     return _CROSS_ENCODER
 
 

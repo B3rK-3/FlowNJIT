@@ -11,7 +11,7 @@ NC='\033[0m' # No Color
 
 # Default configurations
 MODE="prod"
-FORCE_BUILD=false
+FORCE_BUILD=true
 START_BACKEND=true
 START_FRONTEND=true
 START_SCRAPERS=true
@@ -67,7 +67,7 @@ show_help() {
     echo "Options:"
     echo "  --prod, -p           Serve production build (default, uses 'next start')"
     echo "  --dev, -d            Run frontend in development mode (hot reloading, uses 'next dev')"
-    echo "  --build, -b          Force rebuild the production frontend before serving"
+    echo "  --nobuild            Skip building the production frontend (use existing .next)"
     echo "  --scrapers, -s       Launch background data scrapers (enabled by default)"
     echo "  --no-scrapers        Do not launch background data scrapers"
     echo "  --tunnel, -t         Start Cloudflare tunnel (enabled by default; uses token if set)"
@@ -96,9 +96,8 @@ while [[ $# -gt 0 ]]; do
             MODE="dev"
             shift
             ;;
-        --build|-b)
-            FORCE_BUILD=true
-            MODE="prod"
+        --nobuild)
+            FORCE_BUILD=false
             shift
             ;;
         --scrapers|-s)
