@@ -161,16 +161,16 @@ initialize_database()
 The model warmup downloads and loads transformer models on first run. Loading Redis before `initialize_database()` ensures Chroma sees the catalog.
 ### 7. Start the application
 
-The default command starts the full stack: Redis, FastAPI, the course/lecturer scraper worker, and Next.js:
+The default command starts the full production stack: Redis, FastAPI, the scraper worker, the Next.js production build (`next start`), and Cloudflare Tunnel:
 
 ```bash
 ./start.sh
 ```
 
-Production frontend:
+Development mode (runs `next dev` with hot reloading):
 
 ```bash
-./start.sh --prod
+./start.sh --dev
 ```
 
 The scraper worker runs separately as `python -m backend.scrapers`. It refreshes course sections every five minutes and professor ratings every six hours. Its logs are in `backend/logs/scrapers.log`. The backend listens for Redis notifications and reloads its in-memory data. Section-only updates do not rescan ChromaDB; Chroma synchronizes only when a course ID, title, or description changes. Before starting, set the desired course term in `backend/scrapers/currentTerm.txt`.
@@ -186,12 +186,13 @@ If Redis is lost before the next snapshot, the JSON fallback can be up to one da
 Useful alternatives:
 
 ```bash
-./start.sh --no-scrapers   # Redis + backend + frontend
-./start.sh --backend-only  # Redis + backend
-./start.sh --scrapers-only # Redis + scraper worker
+./start.sh --no-tunnel    # Skip Cloudflare tunnel (local LAN only)
+./start.sh --no-scrapers  # Skip scrapers
+./start.sh --backend-only # Redis + backend only
+./start.sh --scrapers-only # Redis + scraper worker only
 ```
 
-ChromaDB and both transformer models run inside the FastAPI backend process; they do not need separate startup commands. Cloudflare Tunnel remains optional (`./start.sh --tunnel`). If automatic LAN detection is wrong inside PRoot, pass the phone address explicitly:
+ChromaDB and both transformer models run inside the FastAPI backend process; they do not need separate startup commands. Cloudflare Tunnel runs automatically by default (or use `--no-tunnel` to disable). If automatic LAN detection is wrong inside PRoot, pass the phone address explicitly:
 
 ```bash
 LAN_IP=192.168.1.50 ./start.sh

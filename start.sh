@@ -10,11 +10,12 @@ BOLD='\033[1m'
 NC='\033[0m' # No Color
 
 # Default configurations
-MODE="dev"
+MODE="prod"
+FORCE_BUILD=false
 START_BACKEND=true
 START_FRONTEND=true
 START_SCRAPERS=true
-START_TUNNEL=false
+START_TUNNEL=true
 TUNNEL_TOKEN=""
 TUNNEL_NAME=""
 HOST="${HOST:-0.0.0.0}"
@@ -64,11 +65,13 @@ show_help() {
     echo "Usage: ./start.sh [options]"
     echo ""
     echo "Options:"
-    echo "  --dev, -d            Run frontend in development mode (default, uses 'next dev')"
-    echo "  --prod, -p           Run frontend in production mode (builds if needed and runs 'next start')"
+    echo "  --prod, -p           Serve production build (default, uses 'next start')"
+    echo "  --dev, -d            Run frontend in development mode (hot reloading, uses 'next dev')"
+    echo "  --build, -b          Force rebuild the production frontend before serving"
     echo "  --scrapers, -s       Launch background data scrapers (enabled by default)"
     echo "  --no-scrapers        Do not launch background data scrapers"
-    echo "  --tunnel, -t         Start Cloudflare tunnel (Quick tunnel or uses CLOUDFLARE_TUNNEL_TOKEN from .env)"
+    echo "  --tunnel, -t         Start Cloudflare tunnel (enabled by default; uses token if set)"
+    echo "  --no-tunnel          Do not start Cloudflare tunnel"
     echo "  --tunnel-token <tok> Start Cloudflare Zero Trust tunnel using a dashboard token"
     echo "  --tunnel-name <name> Start Cloudflare named tunnel by name"
     echo "  --backend-only       Start only Redis and the FastAPI backend"
@@ -93,6 +96,11 @@ while [[ $# -gt 0 ]]; do
             MODE="dev"
             shift
             ;;
+        --build|-b)
+            FORCE_BUILD=true
+            MODE="prod"
+            shift
+            ;;
         --scrapers|-s)
             START_SCRAPERS=true
             shift
@@ -103,6 +111,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         --tunnel|-t)
             START_TUNNEL=true
+            shift
+            ;;
+        --no-tunnel)
+            START_TUNNEL=false
             shift
             ;;
         --tunnel-token)
@@ -118,6 +130,7 @@ while [[ $# -gt 0 ]]; do
         --backend-only)
             START_FRONTEND=false
             START_SCRAPERS=false
+            START_TUNNEL=false
             shift
             ;;
         --frontend-only)
@@ -129,6 +142,7 @@ while [[ $# -gt 0 ]]; do
             START_FRONTEND=false
             START_BACKEND=false
             START_SCRAPERS=true
+            START_TUNNEL=false
             shift
             ;;
         --host)
@@ -273,8 +287,12 @@ if [ "$START_FRONTEND" = true ]; then
     export HOSTNAME="${HOST}"
 
     if [ "$MODE" = "prod" ]; then
-        echo "Building production bundle..."
-        npm run build
+        if [ ! -d ".next" ] || [ "$FORCE_BUILD" = true ]; then
+            echo "Building production bundle..."
+            npm run build
+        else
+            echo "Serving existing production build (.next)..."
+        fi
         npm run start -- -p "$FRONTEND_PORT" -H "$HOST" &
         FRONTEND_PID=$!
     else
@@ -354,8 +372,14 @@ if [ "$START_TUNNEL" = true ]; then
             echo -e "${YELLOW}  Inspect ${TUNNEL_LOG}${NC}"
         fi
     else
-        echo -e "${RED}✗ cloudflared binary is not found in PATH.${NC}"
-        echo -e "${YELLOW}  Install with: curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64 -o /usr/local/bin/cloudflared && chmod +x /usr/local/bin/cloudflared${NC}"
+        if [ -n "$TUNNEL_TOKEN" ] || [ -n "$TUNNEL_NAME" ]; then
+            echo -e "${RED}✗ cloudflared binary is not found in PATH.${NC}"
+            echo -e "${YELLOW}  Install with: curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64 -o /usr/local/bin/cloudflared && chmod +x /usr/local/bin/cloudflared${NC}"
+            exit 1
+        else
+            echo -e "${YELLOW}! cloudflared is not installed; skipping tunnel.${NC}"
+            echo -e "${YELLOW}  To enable Cloudflare Tunnel: curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64 -o /usr/local/bin/cloudflared && chmod +x /usr/local/bin/cloudflared${NC}"
+        fi
     fi
 fi
 

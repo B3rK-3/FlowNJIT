@@ -94,22 +94,24 @@ A comprehensive course prerequisite visualization and planning tool for New Jers
 
 ### One-Command Quick Start (Full Stack)
 
-`./start.sh` starts Redis, the FastAPI backend, the recurring scraper worker, and the Next.js frontend:
+`./start.sh` starts the complete production stack (Redis, FastAPI, the scraper worker, the Next.js production server via `next start`, and Cloudflare Tunnel):
 
 ```bash
 ./start.sh
 ```
 
-Production frontend:
+Development mode (with hot reloading via `next dev`):
 
 ```bash
-./start.sh --prod
+./start.sh --dev
 ```
 
-Skip the scraper worker when only the web application is needed:
+Rebuild frontend or disable optional services:
 
 ```bash
-./start.sh --no-scrapers
+./start.sh --build        # Force rebuild production bundle
+./start.sh --no-tunnel     # Disable Cloudflare tunnel
+./start.sh --no-scrapers   # Disable scraper worker
 ```
 
 ## Background Operations
@@ -125,7 +127,7 @@ The unified startup script runs `python -m backend.scrapers` as a separate manag
 -   **Live API refresh**: The backend subscribes to Redis updates and reloads in-memory course/lecturer data. Five-minute section-only updates do not scan Chroma; Chroma synchronizes only when a course ID, title, or description changes.
 -   **Daily JSON snapshots**: Redis remains current after every scrape, while `graph.json` and `lecturers.json` are atomically rewritten at most once every 24 hours. Override with `JSON_SNAPSHOT_INTERVAL_SECONDS`.
 
-ChromaDB and the transformer models are loaded inside the FastAPI process; they are not separate services. Cloudflare Tunnel is optional and starts only with `./start.sh --tunnel`.
+ChromaDB and the transformer models are loaded inside the FastAPI process; they are not separate services. Cloudflare Tunnel starts automatically with `./start.sh` (or pass `--no-tunnel` to disable).
 
 ### Manual Scraper Execution
 
